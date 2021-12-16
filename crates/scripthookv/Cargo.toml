@@ -1,0 +1,11 @@
+[package]
+name = "scripthookv"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "scripthookv"
+path = "src/lib.rs"
+
+[dependencies]
+shv_bindings = { path = "../shv_bindings" }

@@ -1,0 +1,11 @@
+[package]
+name = "shv_bindings"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "shv_bindings"
+path = "src/lib.rs"
+
+[dependencies]
+libc = "0.2.0"
