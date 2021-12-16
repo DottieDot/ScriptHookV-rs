@@ -1,17 +1,16 @@
-use libc::c_void;
+use libc::{c_void, c_char};
 
-pub type PresentCallback =
-    ::std::option::Option<unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void)>;
+pub type PresentCallback = unsafe extern "C" fn(arg1: *mut c_void);
 
 pub type KeyboardHandler = ::std::option::Option<
     unsafe extern "C" fn(
-        arg1: ::std::os::raw::c_uint,
-        arg2: ::std::os::raw::c_ushort,
-        arg3: ::std::os::raw::c_uchar,
-        arg4: ::std::os::raw::c_char,
-        arg5: ::std::os::raw::c_char,
-        arg6: ::std::os::raw::c_char,
-        arg7: ::std::os::raw::c_char,
+        arg1: u32,
+        arg2: u16,
+        arg3: u8,
+        arg4: i8,
+        arg5: i8,
+        arg6: i8,
+        arg7: i8,
     ),
 >;
 
@@ -52,14 +51,14 @@ pub enum GameVersion {
 #[link(name="./lib/ScriptHookV")]
 extern "C" {
     #[link_name = "?createTexture@@YAHPEBD@Z"]
-    pub fn createTexture(texFileName: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn createTexture(texFileName: *const c_char) -> i32;
 
     #[link_name = "?drawTexture@@YAXHHHHMMMMMMMMMMMM@Z"]
     pub fn drawTexture(
-        id: ::std::os::raw::c_int,
-        index: ::std::os::raw::c_int,
-        level: ::std::os::raw::c_int,
-        time: ::std::os::raw::c_int,
+        id: i32,
+        index: i32,
+        level: i32,
+        time: i32,
         sizeX: f32,
         sizeY: f32,
         centerX: f32,
