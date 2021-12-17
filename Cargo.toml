@@ -1,6 +1,5 @@
 [workspace]
 members = [
   "./crates/libscripthookv-sys",
-  "./crates/scripthookv-rs",
-  "./crates/example"
+  "./crates/scripthookv-rs"
 ]

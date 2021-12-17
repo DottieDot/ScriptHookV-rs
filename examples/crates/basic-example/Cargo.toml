@@ -1,13 +1,13 @@
 [package]
-name = "example"
+name = "basic-example"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "example"
+name = "basic_example"
 path = "src/lib.rs"
 crate-type = ["dylib"]
 
 [dependencies]
 winapi = { version = "0.3.9", features = ["minwindef", "winnt"] }
-scripthookv-rs = { path = "../scripthookv-rs" }
+scripthookv-rs = "0.1.4"
