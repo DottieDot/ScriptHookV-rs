@@ -2,6 +2,10 @@
 name = "libscripthookv-sys"
 version = "0.1.0"
 edition = "2021"
+description = "FFI for ScriptHookV"
+license = "MIT"
+homepage = "https://github.com/DottieDot/ScriptHookV-rs"
+repository = "https://github.com/DottieDot/ScriptHookV-rs.git"
 
 [lib]
 name = "shv_bindings"
