@@ -1,6 +1,6 @@
 [workspace]
 members = [
-  "./crates/shv_bindings",
-  "./crates/scripthookv",
+  "./crates/libscripthookv-sys",
+  "./crates/scripthookv-rs",
   "./crates/example"
 ]

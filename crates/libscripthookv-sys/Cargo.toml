@@ -1,5 +1,5 @@
 [package]
-name = "shv_bindings"
+name = "libscripthookv-sys"
 version = "0.1.0"
 edition = "2021"
 

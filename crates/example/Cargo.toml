@@ -10,4 +10,4 @@ crate-type = ["dylib"]
 
 [dependencies]
 winapi = { version = "0.3.9",  features = ["std", "everything"] }
-scripthookv = { path = "../scripthookv" }
+scripthookv-rs = { path = "../scripthookv-rs" }
