@@ -1,4 +1,4 @@
-use shv_bindings::{GameVersion, getGameVersion, getGlobalPtr};
+use shv_bindings::{getGlobalPtr};
 
 pub extern crate shv_bindings;
 
@@ -10,24 +10,13 @@ mod world;
 mod script;
 mod texture;
 mod callbacks;
+mod game_version;
 
 pub use world::*;
 pub use script::*;
 pub use texture::*;
 pub use callbacks::*;
-
-/// Returns the current game version.
-/// 
-/// ```
-/// if get_game_version() == x {
-///   /* do something specific to game version x */
-/// }
-/// ```
-pub fn get_game_version() -> GameVersion {
-  unsafe {
-    getGameVersion()
-  }
-}
+pub use game_version::*;
 
 /// Gets a script global and returns it as a mutable reference.
 /// 

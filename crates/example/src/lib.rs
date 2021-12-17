@@ -2,6 +2,7 @@ use scripthookv::{register_script, remove_script, script_yield};
 use natives::{misc, vehicle, player, entity, streaming};
 use std::ffi::CString;
 use winapi::shared::minwindef::{HINSTANCE, DWORD, LPVOID, BOOL};
+use winapi::um::winnt::{DLL_PROCESS_ATTACH, DLL_PROCESS_DETACH};
 
 mod natives;
 
@@ -39,11 +40,11 @@ pub extern "stdcall" fn DllMain(
   _reserved: LPVOID,
 ) ->BOOL {
   match reason {
-    winapi::um::winnt::DLL_PROCESS_ATTACH => {
+    DLL_PROCESS_ATTACH => {
       register_script(instance, script_main);
       1
     }
-    winapi::um::winnt::DLL_PROCESS_DETACH => {
+    DLL_PROCESS_DETACH => {
       remove_script(instance);
       1
     },
