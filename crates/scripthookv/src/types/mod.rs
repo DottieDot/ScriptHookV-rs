@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 pub type Void         = usize;
 pub type Any          = usize;
 pub type Bool         = u32;
@@ -40,45 +38,8 @@ pub struct Vector4 {
   _pad0x18: u32
 }
 
-#[repr(C, align(1))]
-#[derive(Clone, Copy, Debug)]
-pub struct Vector3 {
-  pub x   : f32,
-  _pad0x04: u32,
-  pub y   : f32,
-  _pad0x08: u32,
-  pub z   : f32,
-  _pad0x10: u32
-}
+mod vector3;
+mod vector2;
 
-impl Vector3 {
-  pub fn new(x: f32, y: f32, z: f32) -> Self {
-    Self {
-      x,
-      y,
-      z,
-      _pad0x04: 0,
-      _pad0x08: 0,
-      _pad0x10: 0
-    }
-  }
-
-  pub fn zero() -> Self {
-    Self::new(0f32, 0f32, 0f32)
-  }
-}
-
-impl Display for Vector3 {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "({}, {}, {})", self.x, self.y, self.z)
-  }
-}
-
-#[repr(C, align(1))]
-#[derive(Clone, Copy, Debug)]
-pub struct Vector2 {
-  pub x   : f32,
-  _pad0x04: u32,
-  pub y   : f32,
-  _pad0x08: u32
-}
+pub use vector3::*;
+pub use vector2::*;
