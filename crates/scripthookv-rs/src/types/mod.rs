@@ -25,6 +25,9 @@ pub type ColourIndex  = i32;
 pub type Sphere       = i32;
 pub type ScrHandle    = i32;
 
+/// A vector4 representation that can be used with natives.
+/// 
+/// To make it compatible with natives every field is 8 byte aligned.
 #[repr(C, align(1))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vector4 {

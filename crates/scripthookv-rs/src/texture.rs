@@ -4,11 +4,13 @@ use shv_bindings::{drawTexture, createTexture};
 
 use crate::types::Vector2;
 
+/// Used for drawing custom textures.
 pub struct Texture {
   id: i32
 }
 
 impl Texture {
+  /// Creates a new texture from a file path.
   pub fn create(texture_file: &Path) -> Self {
     unsafe {
       let path = CString::new(
@@ -21,6 +23,7 @@ impl Texture {
     }
   }
 
+  /// Draws the texture
   pub fn draw(
     &self,
     index: i32, 

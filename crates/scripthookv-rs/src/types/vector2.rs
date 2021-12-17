@@ -1,5 +1,8 @@
 use std::{fmt::Display, ops::{Add, Mul}, ops::Sub};
 
+/// A vector2 representation that can be used with natives.
+/// 
+/// To make it compatible with natives every field is 8 byte aligned.
 #[repr(C, align(1))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vector2 {
@@ -10,6 +13,7 @@ pub struct Vector2 {
 }
 
 impl Vector2 {
+  /// Creates a new Vector2.
   pub fn new(x: f32, y: f32) -> Self {
     Self {
       x,
@@ -19,14 +23,17 @@ impl Vector2 {
     }
   }
   
+  /// Creates a new Vector2 initialized with 0.
   pub fn zero() -> Self {
     Self::new(0f32, 0f32)
   }
   
+  /// Gets the length of the vector.
   pub fn length(&self) -> f32 {
     (self.x.powf(2f32) + self.y.powf(2f32)).sqrt()
   }
   
+  /// Creates a normalized copy of the vector.
   pub fn normalized(&self) -> Self {
     let length = self.length();
     if length == 0f32 {
@@ -40,10 +47,12 @@ impl Vector2 {
     )
   }
   
+  /// Gets the distance to another vector.
   pub fn distance_to(&self, to: &Vector2) -> f32 {
     (*to - *self).length()
   }
   
+  /// Gets the dot product with another vector.
   pub fn dot(&self, rhs: &Vector2) -> f32 { 
     self.x * rhs.x +
     self.y * rhs.y

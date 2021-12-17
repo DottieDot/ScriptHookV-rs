@@ -1,5 +1,8 @@
 use std::{fmt::Display, ops::{Add, Mul}, ops::Sub};
 
+/// A vector3 representation that can be used with natives.
+/// 
+/// To make it compatible with natives every field is 8 byte aligned.
 #[repr(C, align(1))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vector3 {
@@ -12,6 +15,7 @@ pub struct Vector3 {
 }
 
 impl Vector3 {
+  /// Creates a new Vector3.
   pub fn new(x: f32, y: f32, z: f32) -> Self {
     Self {
       x,
@@ -23,14 +27,17 @@ impl Vector3 {
     }
   }
   
+  /// Creates a new Vector3 initialized with 0.
   pub fn zero() -> Self {
     Self::new(0f32, 0f32, 0f32)
   }
   
+  /// Gets the length of the vector.
   pub fn length(&self) -> f32 {
     (self.x.powf(2f32) + self.y.powf(2f32) + self.z.powf(2f32)).sqrt()
   }
   
+  /// Creates a normalized copy of the vector.
   pub fn normalized(&self) -> Self {
     let length = self.length();
     if length == 0f32 {
@@ -45,16 +52,19 @@ impl Vector3 {
     )
   }
   
+  /// Gets the distance to another vector.
   pub fn distance_to(&self, to: &Vector3) -> f32 {
     (*to - *self).length()
   }
   
+  /// Gets the distance to another vector ignoring the z coordinate. 
   pub fn distance_to_2d(&self, to: &Vector3) -> f32 {
     let mut tmp = *to - *self;
     tmp.z = 0f32;
     tmp.length()
   }
   
+  /// Gets the dot product with another vector.
   pub fn dot(&self, rhs: &Vector3) -> f32 { 
     self.x * rhs.x +
     self.y * rhs.y +
