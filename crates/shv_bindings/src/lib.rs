@@ -2,7 +2,7 @@ use libc::{c_void, c_char};
 
 pub type PresentCallback = unsafe extern "C" fn(arg1: *mut c_void);
 
-pub type KeyboardHandler = ::std::option::Option<
+pub type KeyboardHandler = 
     unsafe extern "C" fn(
         arg1: u32,
         arg2: u16,
@@ -11,8 +11,7 @@ pub type KeyboardHandler = ::std::option::Option<
         arg5: i8,
         arg6: i8,
         arg7: i8,
-    ),
->;
+    );
 
 #[allow(non_camel_case_types)]
 #[repr(i32)]
@@ -90,18 +89,18 @@ extern "C" {
 
     #[link_name = "?scriptRegister@@YAXPEAUHINSTANCE__@@P6AXXZ@Z"]
     pub fn scriptRegister(
-        module: *mut c_void,
+        module: *const c_void,
         LP_SCRIPT_MAIN: extern "C" fn(),
     );
 
     #[link_name = "?scriptRegisterAdditionalThread@@YAXPEAUHINSTANCE__@@P6AXXZ@Z"]
     pub fn scriptRegisterAdditionalThread(
-        module: *mut c_void,
+        module: *const c_void,
         LP_SCRIPT_MAIN: extern "C" fn(),
     );
 
     #[link_name = "?scriptUnregister@@YAXPEAUHINSTANCE__@@@Z"]
-    pub fn scriptUnregister(module: *mut c_void);
+    pub fn scriptUnregister(module: *const c_void);
 
     #[link_name = "?nativeInit@@YAX_K@Z"]
     pub fn nativeInit(hash: u64);
