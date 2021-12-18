@@ -35,7 +35,7 @@ impl TryFrom<i32> for Ped {
   
   fn try_from(handle: i32) -> Result<Self, Self::Error> {
     unsafe {
-      if entity::does_entity_exist(handle) != 0 && !entity::is_entity_a_ped(handle) != 0 {
+      if entity::does_entity_exist(handle) && !entity::is_entity_a_ped(handle) {
         Ok(Self { handle })
       }
       else {

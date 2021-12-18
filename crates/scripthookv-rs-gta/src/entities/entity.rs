@@ -9,14 +9,14 @@ pub trait Entity {
   /// Checks if the entity exists.
   fn exists(&self) -> bool {
     unsafe {
-      entity::does_entity_exist(self.handle()) != 0
+      entity::does_entity_exist(self.handle())
     }
   }
 
   // Checks if the entity is dead.
   fn is_dead(&self) -> bool {
     unsafe {
-      entity::is_entity_dead(self.handle(), 0) != 0
+      entity::is_entity_dead(self.handle(), false)
     }
   }
 
@@ -41,7 +41,7 @@ pub trait Entity {
     }
     else {
       unsafe {
-        entity::set_entity_alpha(self.handle(), opacity, 0);
+        entity::set_entity_alpha(self.handle(), opacity, false)
       }
     }
   }
@@ -49,7 +49,7 @@ pub trait Entity {
   /// Resets the opacity of the entity to opaque.
   fn reset_opacity(&self) {
     unsafe {
-      entity::reset_entity_alpha(self.handle());
+      entity::reset_entity_alpha(self.handle())
     }
   }
 
@@ -57,14 +57,14 @@ pub trait Entity {
   /// Checks if the entity is persistent.
   fn persistent(&self) -> bool {
     unsafe {
-      entity::is_entity_a_mission_entity(self.handle()) != 0
+      entity::is_entity_a_mission_entity(self.handle())
     }
   }
 
   /// Makes the entity persistent.
   fn persist(&self) {
     unsafe {
-      entity::set_entity_as_mission_entity(self.handle(), true.into(), true.into());
+      entity::set_entity_as_mission_entity(self.handle(), true, true)
     }
   }
 
@@ -72,14 +72,14 @@ pub trait Entity {
   fn no_longer_needed(&self) {
     unsafe {
       let mut handle = self.handle();
-      entity::set_entity_as_no_longer_needed(&mut handle);
+      entity::set_entity_as_no_longer_needed(&mut handle)
     }
   }
 
   /// Freezes the position of the entity.
   fn freeze_position(&self, toggle: bool) {
     unsafe {
-      entity::freeze_entity_position(self.handle(), toggle.into());
+      entity::freeze_entity_position(self.handle(), toggle)
     }
   }
 
@@ -107,7 +107,7 @@ pub trait Entity {
   /// For peds a health level below 100 is considered fatal.
   fn set_health(&self, health: i32) {
     unsafe {
-      entity::set_entity_health(self.handle(), health, 0);
+      entity::set_entity_health(self.handle(), health, 0)
     }
   }
 
@@ -135,14 +135,14 @@ pub trait Entity {
   /// For peds a health level below 100 is considered fatal.
   fn set_max_health(&self, max_health: i32) {
     unsafe {
-      entity::set_entity_max_health(self.handle(), max_health);
+      entity::set_entity_max_health(self.handle(), max_health)
     }
   }
 
   /// Gets the current location of the entity.
   fn position(&self) -> Vector3 {
     unsafe {
-      entity::get_entity_coords(self.handle(), false.into())
+      entity::get_entity_coords(self.handle(), false)
     }
   }
 
@@ -152,14 +152,14 @@ pub trait Entity {
   /// If this is not desired use `Entity::set_position_no_offset` instead.
   fn set_position(&self, coords: Vector3, clear_area: bool) {
     unsafe {
-      entity::set_entity_coords(self.handle(), coords, false.into(), false.into(), false.into(), clear_area.into());
+      entity::set_entity_coords(self.handle(), coords, false, false, false, clear_area)
     }
   }
 
   /// Sets the entity to a new exact position.
   fn set_position_no_offset(&self, coords: Vector3) {
     unsafe {
-      entity::set_entity_coords_no_offset(self.handle(), coords, false.into(), false.into(), false.into());
+      entity::set_entity_coords_no_offset(self.handle(), coords, false, false, false)
     }
   }
 
@@ -177,7 +177,7 @@ pub trait Entity {
   /// uses rotation order 2.
   fn set_rotation(&self, rotation: Vector3) {
     unsafe {
-      entity::set_entity_rotation(self.handle(), rotation.x, rotation.y, rotation.z, 2, 1);
+      entity::set_entity_rotation(self.handle(), rotation.x, rotation.y, rotation.z, 2, true)
     }
   }
 
@@ -191,7 +191,7 @@ pub trait Entity {
   /// Sets the heading of the entity.
   fn set_heading(&self, heading: f32) {
     unsafe {
-      entity::set_entity_heading(self.handle(), heading);
+      entity::set_entity_heading(self.handle(), heading)
     }
   }
 
@@ -261,7 +261,7 @@ pub trait Entity {
   /// Sets the velocity of the entity.
   fn set_velocity(&self, velocity: Vector3) {
     unsafe {
-      entity::set_entity_velocity(self.handle(), velocity);
+      entity::set_entity_velocity(self.handle(), velocity)
     }
   }
 
@@ -270,7 +270,42 @@ pub trait Entity {
   /// Speed is in m/s.
   fn set_max_speed(&self, max_speed: f32) {
     unsafe {
-      entity::set_entity_max_speed(self.handle(), max_speed);
+      entity::set_entity_max_speed(self.handle(), max_speed)
+    }
+  }
+
+  /// Checks if the entity is visible.
+  fn visible(&self) -> bool {
+    unsafe {
+      entity::is_entity_visible(self.handle())
+    }
+  }
+
+  /// Sets the visibility of the entity.
+  fn set_visible(&self, visible: bool) {
+    unsafe {
+      entity::set_entity_visible(self.handle(), visible, false)
+    }
+  }
+
+  /// Makes the entity invincible.
+  fn set_invincible(&self, invincible: bool) {
+    unsafe {
+      entity::set_entity_invincible(self.handle(), invincible)
+    }
+  }
+
+  /// Checks if collisions are enabled for the entity.
+  fn has_collisions(&self) -> bool {
+    unsafe {
+      !entity::get_entity_collision_disabled(self.handle())
+    }
+  }
+
+  /// Toggles collisions for the entity.
+  fn set_collisions(&self, enable: bool) {
+    unsafe {
+      entity::set_entity_collision(self.handle(), enable, true)
     }
   }
 }

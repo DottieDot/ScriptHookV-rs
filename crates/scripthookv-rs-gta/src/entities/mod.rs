@@ -47,7 +47,7 @@ pub enum EntityFromHandleError {
 /// Creates the appropriate entity struct for the handle and returns an error if the handle is invalid.
 pub fn entity_from_handle(handle: NativeEntity) -> Result<Box<dyn Entity>, EntityFromHandleError> {
   unsafe {
-    if natives::entity::does_entity_exist(handle) != 0 {
+    if natives::entity::does_entity_exist(handle) {
       let entity_type = natives::entity::get_entity_type(handle);
       match entity_type {
         1 => Ok(Box::new(Ped::try_from(handle).expect("Ped::try_from failed"))),         // Ped
