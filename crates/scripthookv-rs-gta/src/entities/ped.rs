@@ -18,6 +18,7 @@ impl Entity for Ped {
   }
 }
 
+/// The given handle is not a ped handle.
 #[derive(Debug)]
 pub struct NotAPedError {
   handle: i32

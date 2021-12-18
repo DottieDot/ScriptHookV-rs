@@ -18,6 +18,7 @@ impl Entity for Object {
   }
 }
 
+/// The given handle is not an object handle.
 #[derive(Debug)]
 pub struct NotAnObjectError {
   handle: i32

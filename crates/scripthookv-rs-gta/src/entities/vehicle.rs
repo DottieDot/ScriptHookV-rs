@@ -18,6 +18,7 @@ impl Entity for Vehicle {
   }
 }
 
+/// The given handle is not a vehicle handle.
 #[derive(Debug)]
 pub struct NotAVehicleHandleError {
   handle: i32
