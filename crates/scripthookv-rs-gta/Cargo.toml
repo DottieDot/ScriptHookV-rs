@@ -1,0 +1,11 @@
+[package]
+name = "scripthookv-rs-gta"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "scripthookv_gta"
+path = "src/lib.rs"
+
+[dependencies]
+scripthookv-rs = "0.1.4"
