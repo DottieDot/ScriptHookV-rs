@@ -24,6 +24,7 @@ impl Texture {
   }
 
   /// Draws the texture
+  #[inline]
   pub fn draw(
     &self,
     index: i32, 

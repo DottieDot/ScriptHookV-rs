@@ -24,6 +24,7 @@ pub use game_version::*;
 /// /* sets script global 1337 to 10 */
 /// *get_global::<int>(1337) = 10
 /// ```
+#[inline]
 pub unsafe fn get_global<T>(global_id: i32) -> &'static mut T {
   let ptr = getGlobalPtr(global_id);
 

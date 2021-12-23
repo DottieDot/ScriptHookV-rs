@@ -3,6 +3,7 @@ use std::{fmt::Display, ops::{Add, Mul}, ops::Sub};
 /// A vector2 representation that can be used with natives.
 /// 
 /// To make it compatible with natives every field is 8 byte aligned.
+#[must_use]
 #[repr(C, align(1))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vector2 {
@@ -14,6 +15,7 @@ pub struct Vector2 {
 
 impl Vector2 {
   /// Creates a new Vector2.
+  #[inline]
   pub fn new(x: f32, y: f32) -> Self {
     Self {
       x,
@@ -24,11 +26,13 @@ impl Vector2 {
   }
   
   /// Creates a new Vector2 initialized with 0.
+  #[inline]
   pub fn zero() -> Self {
     Self::new(0f32, 0f32)
   }
   
   /// Gets the length of the vector.
+  #[must_use]
   pub fn length(&self) -> f32 {
     (self.x.powf(2f32) + self.y.powf(2f32)).sqrt()
   }
@@ -48,11 +52,15 @@ impl Vector2 {
   }
   
   /// Gets the distance to another vector.
+  #[inline]
+  #[must_use]
   pub fn distance_to(&self, to: &Vector2) -> f32 {
     (*to - *self).length()
   }
   
   /// Gets the dot product with another vector.
+  #[inline]
+  #[must_use]
   pub fn dot(&self, rhs: &Vector2) -> f32 { 
     self.x * rhs.x +
     self.y * rhs.y
@@ -68,6 +76,7 @@ impl Display for Vector2 {
 impl Add<Vector2> for Vector2 {
   type Output = Vector2;
   
+  #[inline]
   fn add(self, rhs: Vector2) -> Self::Output {
     Vector2::new(
       self.x + rhs.x,
@@ -79,6 +88,7 @@ impl Add<Vector2> for Vector2 {
 impl Sub<Vector2> for Vector2 {
   type Output = Vector2;
   
+  #[inline]
   fn sub(self, rhs: Vector2) -> Self::Output {
     Vector2::new(
       self.x - rhs.x,
@@ -90,6 +100,7 @@ impl Sub<Vector2> for Vector2 {
 impl Mul<f32> for Vector2 {
   type Output = Vector2;
   
+  #[inline]
   fn mul(self, rhs: f32) -> Self::Output {
     Vector2::new(
       self.x * rhs,
@@ -99,6 +110,8 @@ impl Mul<f32> for Vector2 {
 }
 
 impl PartialEq<Vector2> for Vector2 {
+  #[inline]
+  #[must_use]
   fn eq(&self, other: &Vector2) -> bool {
     self.x == other.x && 
     self.y == other.y
@@ -106,6 +119,8 @@ impl PartialEq<Vector2> for Vector2 {
 }
 
 impl PartialOrd<Vector2> for Vector2 {
+  #[inline]
+  #[must_use]
   fn partial_cmp(&self, other: &Vector2) -> Option<std::cmp::Ordering> {
     match self.x.partial_cmp(&other.x) {
       Some(core::cmp::Ordering::Equal) => {}

@@ -2,6 +2,7 @@ use shv_bindings::{PresentCallback, KeyboardHandler, presentCallbackRegister, pr
 
 
 /// Wrapper for presentCallbackRegister
+#[inline]
 pub fn register_present_callback(cb: PresentCallback) {
   unsafe {
     presentCallbackRegister(cb)
@@ -9,6 +10,7 @@ pub fn register_present_callback(cb: PresentCallback) {
 }
 
 /// Wrapper for presentCallbackUnregister
+#[inline]
 pub fn remove_present_callback(cb: PresentCallback) {
   unsafe {
     presentCallbackUnregister(cb)
@@ -16,6 +18,7 @@ pub fn remove_present_callback(cb: PresentCallback) {
 }
 
 /// Wrapper for register_keyboard_handler
+#[inline]
 pub fn register_keyboard_handler(handler: KeyboardHandler) {
   unsafe {
     keyboardHandlerRegister(handler)
@@ -23,6 +26,7 @@ pub fn register_keyboard_handler(handler: KeyboardHandler) {
 }
 
 /// Wrapper for remove_keyboard_handler
+#[inline]
 pub fn remove_keyboard_handler(handler: KeyboardHandler) {
   unsafe {
     keyboardHandlerUnregister(handler)

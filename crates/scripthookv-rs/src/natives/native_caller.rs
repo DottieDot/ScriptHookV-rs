@@ -4,6 +4,7 @@ use shv_bindings::{nativeInit, nativePush64, nativeCall};
 pub type NativeHash = u64;
 
 /// Start a native call
+#[inline]
 pub fn native_init(hash: NativeHash) {
   unsafe {
     nativeInit(hash)
@@ -11,6 +12,7 @@ pub fn native_init(hash: NativeHash) {
 }
 
 /// Add a parameter to the current native call
+#[inline]
 pub unsafe fn native_push<T: Copy>(value: &T) {
   let size = size_of::<T>();
   let chunks = (size / 8) + ((size % 8).clamp(0, 1));
@@ -24,6 +26,7 @@ pub unsafe fn native_push<T: Copy>(value: &T) {
 }
 
 /// Confirm the current native call and cast its result.
+#[inline]
 pub unsafe fn native_call<T: Copy>() -> T {
   let result_pointer = nativeCall();
   *(result_pointer as *mut T)

@@ -9,3 +9,4 @@ path = "src/lib.rs"
 
 [dependencies]
 scripthookv-rs = "0.1.4"
+joaat = "0.1.0"

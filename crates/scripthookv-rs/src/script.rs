@@ -10,6 +10,7 @@ use shv_bindings::{scriptWait, scriptRegister, scriptUnregister, scriptRegisterA
 /// /* wait 100ms */
 /// script_wait(Duration::from_millis(100))
 /// ```
+#[inline]
 pub fn script_wait(duration: Duration) {
   unsafe {
     scriptWait(duration.as_millis() as u32)
@@ -25,6 +26,7 @@ pub fn script_wait(duration: Duration) {
 ///   script_yield();
 /// }
 /// ```
+#[inline]
 pub fn script_yield() {
   script_wait(Duration::from_millis(0))
 }
@@ -39,6 +41,7 @@ pub fn script_yield() {
 /// /* in DllMain */
 /// register_script(instance, script_main);
 /// ```
+#[inline]
 pub fn register_script(module: HINSTANCE, entrypoint: extern "C" fn()) {
   unsafe {
     scriptRegister(module as *const c_void, entrypoint)
@@ -55,6 +58,7 @@ pub fn register_script(module: HINSTANCE, entrypoint: extern "C" fn()) {
 /// /* in DllMain */
 /// register_additional_script_thread(instance, background_script);
 /// ```
+#[inline]
 pub fn register_additional_script_thread(module: HINSTANCE, entrypoint: extern "C" fn()) {
   unsafe {
     scriptRegisterAdditionalThread(module as *const c_void, entrypoint)
@@ -67,6 +71,7 @@ pub fn register_additional_script_thread(module: HINSTANCE, entrypoint: extern "
 /// /* in DllMain */
 /// remove_script(instance);
 /// ```
+#[inline]
 pub fn remove_script(module: HINSTANCE) {
   unsafe {
     scriptUnregister(module as *const c_void)

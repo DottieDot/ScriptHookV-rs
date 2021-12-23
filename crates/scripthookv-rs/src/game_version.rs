@@ -257,6 +257,7 @@ impl TryFrom<i32> for GameVersion {
 ///   /* do something specific for Build_335_2_Steam */
 /// }
 /// ```
+#[inline]
 pub fn get_game_version() -> Result<GameVersion, TryFromIntError> {
   unsafe {
     GameVersion::try_from(getGameVersion() as i32)

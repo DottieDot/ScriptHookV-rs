@@ -3,6 +3,8 @@ use crate::natives::*;
 
 use super::Entity;
 
+#[must_use]
+#[derive(Debug, Clone, Copy)]
 pub struct Vehicle {
   handle: NativeVehicle
 }
@@ -13,6 +15,8 @@ impl Vehicle {
 
 impl Entity for Vehicle {
   /// Gets the underlying entity handle.
+  #[inline]
+  #[must_use]
   fn handle(&self) -> scripthookv::types::Entity {
     self.handle
   }

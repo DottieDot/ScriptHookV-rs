@@ -1,31 +1,36 @@
-use scripthookv::types::{Object as NativeObject, Vector3, Hash};
-use crate::natives::*;
+use scripthookv::types::{Object as NativeObject, Vector3};
+use crate::{natives::*, Model};
 
 use super::Entity;
 
+#[must_use]
+#[derive(Debug, Clone, Copy)]
 pub struct Object {
   handle: NativeObject
 }
 
 impl Object {
   /// Creates a new object in the world.
-  pub fn create(model: Hash, coords: Vector3, dynamic: bool) -> Result<Self, CreateObjectError> {
+  #[inline]
+  pub fn create(model: Model, coords: Vector3, dynamic: bool) -> Result<Self, CreateObjectError> {
     unsafe {
-      let handle = object::create_object(model, coords, false, false, dynamic);
+      let handle = object::create_object(model.hash(), coords, false, false, dynamic);
       Object::try_from(handle)
         .map_err(|_| CreateObjectError { model })
     }
   }
   
   /// Tries finding the closest object of the given type.
-  pub fn from_closest_of_type(coords: Vector3, radius: f32, model: Hash, ignore_mission_entities: bool) -> Option<Self> {
+  #[inline]
+  pub fn from_closest_of_type(coords: Vector3, radius: f32, model: Model, ignore_mission_entities: bool) -> Option<Self> {
     unsafe {
-      let handle = object::get_closest_object_of_type(coords, radius, model, ignore_mission_entities, false, false);
+      let handle = object::get_closest_object_of_type(coords, radius, model.hash(), ignore_mission_entities, false, false);
       Object::try_from(handle).ok()
     }
   }
   
   /// Align the object with the ground and returns wether this was successful or not.
+  #[inline]
   pub fn place_on_ground_properly(&self) -> bool {
     unsafe {
       object::place_object_on_ground_properly(self.handle())
@@ -36,6 +41,8 @@ impl Object {
   /// 
   /// Returns true when the object has reached its destination.
   /// Has to be called every tick until the destination has been reached.
+  #[inline]
+  #[must_use]
   pub fn slide_to(&self, to: Vector3, speed: Vector3, collisions: bool) -> bool {
     unsafe {
       object::slide_object(self.handle(), to, speed, collisions)
@@ -43,6 +50,7 @@ impl Object {
   }
   
   /// Makes the object targetable.
+  #[inline]
   pub fn set_targetable(&self, targetable: bool) {
     unsafe {
       object::set_object_targettable(self.handle(), targetable)
@@ -52,6 +60,7 @@ impl Object {
   /// Makes vehicles avoid the object.
   /// 
   /// Overrides a flag on the object which determines if the object should be avoided by a vehicle in task CTaskVehicleGoToPointWithAvoidanceAutomobile.
+  #[inline]
   pub fn set_for_vehicles_to_avoid(&self, avoid: bool) {
     unsafe {
       object::set_object_force_vehicles_to_avoid(self.handle(), avoid)
@@ -61,6 +70,7 @@ impl Object {
 
 impl Entity for Object {
   /// Gets the underlying entity handle.
+  #[inline]
   fn handle(&self) -> scripthookv::types::Entity {
     self.handle
   }
@@ -95,11 +105,11 @@ impl TryFrom<i32> for Object {
 
 #[derive(Debug)]
 pub struct CreateObjectError {
-  model: Hash
+  model: Model
 }
 
 impl std::fmt::Display for CreateObjectError {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "failed to create object with model {:#010x}", self.model)
+    write!(f, "failed to create object with model {}", self.model)
   }
 }
