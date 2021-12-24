@@ -258,8 +258,9 @@ impl TryFrom<i32> for GameVersion {
 /// }
 /// ```
 #[inline]
-pub fn get_game_version() -> Result<GameVersion, TryFromIntError> {
+pub fn get_game_version() -> Option<GameVersion> {
   unsafe {
     GameVersion::try_from(getGameVersion() as i32)
+      .ok()
   }
 }
