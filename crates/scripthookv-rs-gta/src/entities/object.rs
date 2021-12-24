@@ -19,13 +19,24 @@ impl Object {
         .map_err(|_| CreateObjectError { model })
     }
   }
+
+    /// Creates a new object in the world at an exact position.
+    #[inline]
+    pub fn create_no_offset(model: Model, coords: Vector3, dynamic: bool) -> Result<Self, CreateObjectError> {
+      unsafe {
+        let handle = object::create_object_no_offset(model.hash(), coords, false, false, dynamic);
+        Object::try_from(handle)
+          .map_err(|_| CreateObjectError { model })
+      }
+    }
   
   /// Tries finding the closest object of the given type.
   #[inline]
   pub fn from_closest_of_type(coords: Vector3, radius: f32, model: Model, ignore_mission_entities: bool) -> Option<Self> {
     unsafe {
-      let handle = object::get_closest_object_of_type(coords, radius, model.hash(), ignore_mission_entities, false, false);
-      Object::try_from(handle).ok()
+      object::get_closest_object_of_type(coords, radius, model.hash(), ignore_mission_entities, false, false)
+        .try_into()
+        .ok()
     }
   }
   
@@ -111,5 +122,13 @@ pub struct CreateObjectError {
 impl std::fmt::Display for CreateObjectError {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     write!(f, "failed to create object with model {}", self.model)
+  }
+}
+
+impl Into<i32> for Object {
+  #[inline]
+  #[must_use]
+  fn into(self) -> i32 {
+    self.handle()
   }
 }

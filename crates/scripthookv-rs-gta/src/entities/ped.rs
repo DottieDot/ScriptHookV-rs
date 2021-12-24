@@ -48,3 +48,11 @@ impl TryFrom<i32> for Ped {
     }
   }
 }
+
+impl Into<i32> for Ped {
+  #[inline]
+  #[must_use]
+  fn into(self) -> i32 {
+    self.handle()
+  }
+}

@@ -8,5 +8,8 @@ name = "scripthookv_gta"
 path = "src/lib.rs"
 
 [dependencies]
-scripthookv-rs = "0.1.4"
+scripthookv-rs = "0.1.6"
 joaat = "0.1.0"
+strum = "0.23"
+strum_macros = "0.23"
+num_enum = "0.5.5"
