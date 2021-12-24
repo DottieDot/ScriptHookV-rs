@@ -4,6 +4,7 @@ use shv_bindings::getGameVersion;
 
 /// Used for identifying game versions.
 #[allow(non_camel_case_types)]
+#[derive(Debug, Clone, Copy)]
 pub enum GameVersion {
   Build_335_2_Steam        = 00,
   Build_335_2_NotSteam     = 01,
@@ -245,6 +246,20 @@ impl TryFrom<i32> for GameVersion {
 
       _ => Err(TryFromIntError { value })
     }
+  }
+}
+
+impl PartialEq for GameVersion {
+  fn eq(&self, other: &Self) -> bool {
+    core::mem::discriminant(self) == core::mem::discriminant(other)
+  }
+}
+
+impl PartialOrd for GameVersion {
+  #[inline]
+  #[must_use]
+  fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    (*self as i32).partial_cmp(&(*other as i32))
   }
 }
 
