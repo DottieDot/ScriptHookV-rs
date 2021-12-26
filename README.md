@@ -30,7 +30,7 @@ scripthookv-rs = "0.1.6"
 This crate contains a wrapped api for GTA 5 natives. It should be installed together with the `scripthookv-rs` crate.
 
 #### Installation
-This care has not been published yet.
+This crate has not been published yet.
 
 ## Usage
 
