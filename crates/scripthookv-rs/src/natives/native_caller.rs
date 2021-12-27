@@ -1,14 +1,12 @@
+use shv_bindings::{nativeCall, nativeInit, nativePush64};
 use std::mem::size_of;
-use shv_bindings::{nativeInit, nativePush64, nativeCall};
 
 pub type NativeHash = u64;
 
 /// Start a native call
 #[inline]
 pub fn native_init(hash: NativeHash) {
-  unsafe {
-    nativeInit(hash)
-  }
+  unsafe { nativeInit(hash) }
 }
 
 /// Add a parameter to the current native call
@@ -18,7 +16,7 @@ pub unsafe fn native_push<T: Copy>(value: &T) {
   let chunks = (size / 8) + ((size % 8).clamp(0, 1));
 
   for i in 0..chunks {
-    let ptr    = (value as *const T) as *const u64;
+    let ptr = (value as *const T) as *const u64;
     let buffer = *ptr.add(i);
 
     nativePush64(buffer);

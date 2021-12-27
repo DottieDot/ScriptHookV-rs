@@ -1,5 +1,5 @@
-use scripthookv::types::Ped as NativePed;
 use crate::natives::*;
+use scripthookv::types::Ped as NativePed;
 
 use super::Entity;
 
@@ -9,9 +9,7 @@ pub struct Ped {
   handle: NativePed
 }
 
-impl Ped {
-  
-}
+impl Ped {}
 
 impl Entity for Ped {
   /// Gets the underlying entity handle.
@@ -36,13 +34,12 @@ impl std::fmt::Display for NotAPedError {
 
 impl TryFrom<i32> for Ped {
   type Error = NotAPedError;
-  
+
   fn try_from(handle: i32) -> Result<Self, Self::Error> {
     unsafe {
       if entity::does_entity_exist(handle) && !entity::is_entity_a_ped(handle) {
         Ok(Self { handle })
-      }
-      else {
+      } else {
         Err(Self::Error { handle })
       }
     }

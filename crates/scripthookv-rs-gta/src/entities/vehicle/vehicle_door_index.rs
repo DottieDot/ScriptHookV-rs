@@ -1,4 +1,4 @@
-use num_enum::{TryFromPrimitive, IntoPrimitive};
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 use strum_macros::EnumIter;
 
 #[derive(Debug, Clone, Copy, EnumIter, TryFromPrimitive, IntoPrimitive)]

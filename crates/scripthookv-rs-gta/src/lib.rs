@@ -1,8 +1,7 @@
-
 mod natives;
 
-pub mod entities;
 pub mod color;
+pub mod entities;
 
 mod model;
 

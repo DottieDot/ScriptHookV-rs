@@ -1,5 +1,4 @@
-use super::{RGBA, Color};
-
+use super::{Color, RGBA};
 
 #[derive(Debug, Copy, Clone)]
 pub struct RGB {
@@ -12,11 +11,7 @@ impl RGB {
   #[inline]
   #[must_use]
   pub fn new(r: u8, g: u8, b: u8) -> Self {
-    Self {
-      r,
-      g,
-      b
-    }
+    Self { r, g, b }
   }
 }
 

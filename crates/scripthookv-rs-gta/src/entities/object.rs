@@ -1,5 +1,5 @@
-use scripthookv::types::{Object as NativeObject, Vector3};
 use crate::{natives::*, Model};
+use scripthookv::types::{Object as NativeObject, Vector3};
 
 use super::Entity;
 
@@ -15,67 +15,73 @@ impl Object {
   pub fn create(model: Model, coords: Vector3, dynamic: bool) -> Result<Self, CreateObjectError> {
     unsafe {
       let handle = object::create_object(model.hash(), coords, false, false, dynamic);
-      Object::try_from(handle)
-        .map_err(|_| CreateObjectError { model })
+      Object::try_from(handle).map_err(|_| CreateObjectError { model })
     }
   }
 
-    /// Creates a new object in the world at an exact position.
-    #[inline]
-    pub fn create_no_offset(model: Model, coords: Vector3, dynamic: bool) -> Result<Self, CreateObjectError> {
-      unsafe {
-        let handle = object::create_object_no_offset(model.hash(), coords, false, false, dynamic);
-        Object::try_from(handle)
-          .map_err(|_| CreateObjectError { model })
-      }
-    }
-  
-  /// Tries finding the closest object of the given type.
+  /// Creates a new object in the world at an exact position.
   #[inline]
-  pub fn from_closest_of_type(coords: Vector3, radius: f32, model: Model, ignore_mission_entities: bool) -> Option<Self> {
+  pub fn create_no_offset(
+    model: Model,
+    coords: Vector3,
+    dynamic: bool
+  ) -> Result<Self, CreateObjectError> {
     unsafe {
-      object::get_closest_object_of_type(coords, radius, model.hash(), ignore_mission_entities, false, false)
-        .try_into()
-        .ok()
+      let handle = object::create_object_no_offset(model.hash(), coords, false, false, dynamic);
+      Object::try_from(handle).map_err(|_| CreateObjectError { model })
     }
   }
-  
+
+  /// Tries finding the closest object of the given type.
+  #[inline]
+  pub fn from_closest_of_type(
+    coords: Vector3,
+    radius: f32,
+    model: Model,
+    ignore_mission_entities: bool
+  ) -> Option<Self> {
+    unsafe {
+      object::get_closest_object_of_type(
+        coords,
+        radius,
+        model.hash(),
+        ignore_mission_entities,
+        false,
+        false
+      )
+      .try_into()
+      .ok()
+    }
+  }
+
   /// Align the object with the ground and returns wether this was successful or not.
   #[inline]
   pub fn place_on_ground_properly(&self) -> bool {
-    unsafe {
-      object::place_object_on_ground_properly(self.handle())
-    }
+    unsafe { object::place_object_on_ground_properly(self.handle()) }
   }
-  
+
   /// Moves an object to the target at the specified speed.
-  /// 
+  ///
   /// Returns true when the object has reached its destination.
   /// Has to be called every tick until the destination has been reached.
   #[inline]
   #[must_use]
   pub fn slide_to(&self, to: Vector3, speed: Vector3, collisions: bool) -> bool {
-    unsafe {
-      object::slide_object(self.handle(), to, speed, collisions)
-    }
+    unsafe { object::slide_object(self.handle(), to, speed, collisions) }
   }
-  
+
   /// Makes the object targetable.
   #[inline]
   pub fn set_targetable(&self, targetable: bool) {
-    unsafe {
-      object::set_object_targettable(self.handle(), targetable)
-    }
+    unsafe { object::set_object_targettable(self.handle(), targetable) }
   }
-  
+
   /// Makes vehicles avoid the object.
-  /// 
+  ///
   /// Overrides a flag on the object which determines if the object should be avoided by a vehicle in task CTaskVehicleGoToPointWithAvoidanceAutomobile.
   #[inline]
   pub fn set_for_vehicles_to_avoid(&self, avoid: bool) {
-    unsafe {
-      object::set_object_force_vehicles_to_avoid(self.handle(), avoid)
-    }
+    unsafe { object::set_object_force_vehicles_to_avoid(self.handle(), avoid) }
   }
 }
 
@@ -101,13 +107,12 @@ impl std::fmt::Display for NotAnObjectError {
 
 impl TryFrom<i32> for Object {
   type Error = NotAnObjectError;
-  
+
   fn try_from(handle: i32) -> Result<Self, Self::Error> {
     unsafe {
       if entity::does_entity_exist(handle) && !entity::is_entity_an_object(handle) {
         Ok(Self { handle })
-      }
-      else {
+      } else {
         Err(Self::Error { handle })
       }
     }

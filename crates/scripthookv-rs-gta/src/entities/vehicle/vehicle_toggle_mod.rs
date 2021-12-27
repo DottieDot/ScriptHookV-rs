@@ -13,30 +13,23 @@ pub enum VehicleToggleMods {
 #[must_use]
 pub struct VehicleToggleMod {
   vehicle: Vehicle,
-  mod_id : VehicleToggleMods
+  mod_id:  VehicleToggleMods
 }
 
 impl VehicleToggleMod {
   #[inline]
   pub fn new(vehicle: Vehicle, mod_id: VehicleToggleMods) -> Self {
-    Self {
-      vehicle,
-      mod_id
-    }
+    Self { vehicle, mod_id }
   }
 
   #[inline]
   #[must_use]
   pub fn enabled(&self) -> bool {
-    unsafe {
-      vehicle::is_toggle_mod_on(self.vehicle.into(), self.mod_id as i32)
-    }
+    unsafe { vehicle::is_toggle_mod_on(self.vehicle.into(), self.mod_id as i32) }
   }
 
   #[inline]
   pub fn enable(&self, toggle: bool) {
-    unsafe {
-      vehicle::toggle_vehicle_mod(self.vehicle.into(), self.mod_id as i32, toggle)
-    }
+    unsafe { vehicle::toggle_vehicle_mod(self.vehicle.into(), self.mod_id as i32, toggle) }
   }
 }

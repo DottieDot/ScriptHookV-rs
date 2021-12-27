@@ -1,5 +1,5 @@
-use crate::{natives::*, entities::Vehicle};
 use crate::entities::{VehicleDoor, VehicleDoorIndex, VehicleDoorIndexIter};
+use crate::{entities::Vehicle, natives::*};
 
 use strum::IntoEnumIterator;
 
@@ -12,9 +12,7 @@ impl VehicleDoors {
   #[inline]
   #[must_use]
   pub fn new(vehicle: Vehicle) -> Self {
-    Self {
-      vehicle
-    }
+    Self { vehicle }
   }
 
   #[inline]
@@ -26,15 +24,14 @@ impl VehicleDoors {
   #[inline]
   #[must_use]
   pub fn get_door(&self, door: VehicleDoorIndex) -> Option<VehicleDoor> {
-    self.has_door(door)
-        .then(|| VehicleDoor::new(self.vehicle, door))
+    self
+      .has_door(door)
+      .then(|| VehicleDoor::new(self.vehicle, door))
   }
 
   #[inline]
   pub fn close_all(&self, instantly: bool) {
-    unsafe {
-      vehicle::set_vehicle_doors_shut(self.vehicle.into(), instantly)
-    }
+    unsafe { vehicle::set_vehicle_doors_shut(self.vehicle.into(), instantly) }
   }
 
   #[inline]
@@ -45,7 +42,7 @@ impl VehicleDoors {
 }
 
 pub struct VehicleDoorIterator {
-  doors  : VehicleDoors,
+  doors:   VehicleDoors,
   current: VehicleDoorIndexIter
 }
 
@@ -66,8 +63,9 @@ impl Iterator for VehicleDoorIterator {
   #[inline]
   #[must_use]
   fn next(&mut self) -> Option<Self::Item> {
-    self.current
-        .find(|door| self.doors.has_door(*door))
-        .and_then(|door| self.doors.get_door(door))
+    self
+      .current
+      .find(|door| self.doors.has_door(*door))
+      .and_then(|door| self.doors.get_door(door))
   }
 }

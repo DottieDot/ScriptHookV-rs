@@ -1,6 +1,9 @@
 use strum::IntoEnumIterator;
 
-use super::{Vehicle, VehicleModTypes, VehicleModType, VehicleModTypesIter, VehicleExtra, VehicleToggleMod, VehicleToggleModsIter, VehicleToggleMods};
+use super::{
+  Vehicle, VehicleExtra, VehicleModType, VehicleModTypes, VehicleModTypesIter, VehicleToggleMod,
+  VehicleToggleMods, VehicleToggleModsIter
+};
 
 use crate::natives::*;
 
@@ -20,73 +23,64 @@ pub struct VehicleModManager {
 impl VehicleModManager {
   #[inline]
   pub fn new(vehicle: Vehicle) -> Self {
-    Self {
-      vehicle
-    }
+    Self { vehicle }
   }
 
   #[inline]
   #[must_use]
   pub fn mod_kit(&self) -> i32 {
-    unsafe {
-      vehicle::get_vehicle_mod_kit(self.vehicle.into())
-    }
+    unsafe { vehicle::get_vehicle_mod_kit(self.vehicle.into()) }
   }
 
   #[inline]
   pub fn set_mod_kit(&self, mod_kit: i32) {
-    unsafe {
-      vehicle::set_vehicle_mod_kit(self.vehicle.into(), mod_kit)
-    }
+    unsafe { vehicle::set_vehicle_mod_kit(self.vehicle.into(), mod_kit) }
   }
 
   #[inline]
   #[must_use]
   pub fn num_mod_kits(&self) -> i32 {
-    unsafe {
-      vehicle::get_num_mod_kits(self.vehicle.into())
-    }
+    unsafe { vehicle::get_num_mod_kits(self.vehicle.into()) }
   }
-  
+
   #[inline]
   #[must_use]
   pub fn has_mod_type(&self, mod_type: VehicleModTypes) -> bool {
-    unsafe {
-      vehicle::get_num_vehicle_mods(self.vehicle.into(), mod_type as i32) != 0
-    }
+    unsafe { vehicle::get_num_vehicle_mods(self.vehicle.into(), mod_type as i32) != 0 }
   }
-  
+
   #[inline]
   #[must_use]
   pub fn get_mod_type(&self, mod_type: VehicleModTypes) -> Option<VehicleModType> {
-    self.has_mod_type(mod_type)
+    self
+      .has_mod_type(mod_type)
       .then(|| VehicleModType::new(self.vehicle, mod_type))
   }
-  
+
   #[inline]
   #[must_use]
   pub fn has_mod_of_type(&self, mod_type: VehicleModTypes) -> bool {
-    self.get_mod_type(mod_type)
+    self
+      .get_mod_type(mod_type)
       .and_then(|m| Some(m.has_mod()))
       .unwrap_or(false)
   }
-  
+
   #[inline]
   pub fn iter_mod_types(&self) -> VehicleModTypeIterator {
     VehicleModTypeIterator::new(*self)
   }
-  
+
   #[inline]
   #[must_use]
   pub fn has_extra(&self, extra_id: i32) -> bool {
-    unsafe {
-      vehicle::does_extra_exist(self.vehicle.into(), extra_id)
-    }
+    unsafe { vehicle::does_extra_exist(self.vehicle.into(), extra_id) }
   }
-  
+
   #[inline]
   pub fn get_extra(&self, extra_id: i32) -> Option<VehicleExtra> {
-    self.has_extra(extra_id)
+    self
+      .has_extra(extra_id)
       .then(|| VehicleExtra::new(self.vehicle, extra_id))
   }
 
@@ -109,23 +103,19 @@ impl VehicleModManager {
   #[inline]
   #[must_use]
   pub fn neon_light_enabled(&self, neon: VehicleNeonLights) -> bool {
-    unsafe {
-      vehicle::_is_vehicle_neon_light_enabled(self.vehicle.into(), neon as i32)
-    }
+    unsafe { vehicle::_is_vehicle_neon_light_enabled(self.vehicle.into(), neon as i32) }
   }
 
   #[inline]
   pub fn enable_neon_light(&self, neon: VehicleNeonLights, toggle: bool) {
-    unsafe {
-      vehicle::_set_vehicle_neon_light_enabled(self.vehicle.into(), neon as i32, toggle)
-    }
+    unsafe { vehicle::_set_vehicle_neon_light_enabled(self.vehicle.into(), neon as i32, toggle) }
   }
 }
 
 #[must_use]
 pub struct VehicleModTypeIterator {
   mod_manager: VehicleModManager,
-  current: VehicleModTypesIter
+  current:     VehicleModTypesIter
 }
 
 impl VehicleModTypeIterator {
@@ -140,9 +130,11 @@ impl VehicleModTypeIterator {
 
 impl Iterator for VehicleModTypeIterator {
   type Item = VehicleModType;
-  
+
   fn next(&mut self) -> Option<Self::Item> {
-    self.current.find(|&value| self.mod_manager.has_mod_type(value))
+    self
+      .current
+      .find(|&value| self.mod_manager.has_mod_type(value))
       .and_then(|value| self.mod_manager.get_mod_type(value))
   }
 }
@@ -150,7 +142,7 @@ impl Iterator for VehicleModTypeIterator {
 #[must_use]
 pub struct VehicleExtraIterator {
   mod_manager: VehicleModManager,
-  current    : i32
+  current:     i32
 }
 
 #[must_use]
@@ -166,7 +158,7 @@ impl VehicleExtraIterator {
 
 impl Iterator for VehicleExtraIterator {
   type Item = VehicleExtra;
-  
+
   fn next(&mut self) -> Option<Self::Item> {
     let extra = self.mod_manager.get_extra(self.current);
     if extra.is_some() {
@@ -179,7 +171,7 @@ impl Iterator for VehicleExtraIterator {
 #[must_use]
 pub struct VehicleToggleModIterator {
   mod_manager: VehicleModManager,
-  current    : VehicleToggleModsIter
+  current:     VehicleToggleModsIter
 }
 
 impl VehicleToggleModIterator {
@@ -197,7 +189,9 @@ impl Iterator for VehicleToggleModIterator {
 
   #[inline]
   fn next(&mut self) -> Option<Self::Item> {
-    self.current.next()
+    self
+      .current
+      .next()
       .and_then(|m| Some(self.mod_manager.get_toggle_mod(m)))
   }
 }

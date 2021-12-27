@@ -12,12 +12,7 @@ impl RGBA {
   #[inline]
   #[must_use]
   pub fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
-    Self {
-      r,
-      g,
-      b,
-      a
-    }
+    Self { r, g, b, a }
   }
 }
 

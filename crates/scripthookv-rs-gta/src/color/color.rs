@@ -1,13 +1,11 @@
-use super::{RGBA, RGB};
+use super::{RGB, RGBA};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Color {
   pub(crate) representation: RGBA
 }
 
-impl Color {
-
-}
+impl Color {}
 
 impl From<RGBA> for Color {
   #[inline]

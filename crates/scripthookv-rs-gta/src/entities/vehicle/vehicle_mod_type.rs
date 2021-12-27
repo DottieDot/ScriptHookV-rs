@@ -48,47 +48,45 @@ pub enum VehicleModTypes {
   FuelTank        = 45,
   Windows         = 46,
   Livery          = 48
-} 
+}
 
 #[must_use]
 #[derive(Debug)]
 pub struct VehicleModType {
-  vehicle : Vehicle,
+  vehicle:  Vehicle,
   mod_type: VehicleModTypes
 }
 
 impl VehicleModType {
   #[inline]
   pub fn new(vehicle: Vehicle, mod_type: VehicleModTypes) -> Self {
-    Self {
-      vehicle,
-      mod_type
-    }
+    Self { vehicle, mod_type }
   }
 
   /// Gets the currently installed mod.
   #[inline]
   #[must_use]
   pub fn get(&self) -> i32 {
-    unsafe {
-      vehicle::get_vehicle_mod(self.vehicle.into(), self.mod_type as i32)
-    }
+    unsafe { vehicle::get_vehicle_mod(self.vehicle.into(), self.mod_type as i32) }
   }
 
   /// Sets the vehicle mod.
   #[inline]
   pub fn set(&self, mod_id: i32) {
     unsafe {
-      vehicle::set_vehicle_mod(self.vehicle.into(), self.mod_type as i32, mod_id, self.get_variation())
+      vehicle::set_vehicle_mod(
+        self.vehicle.into(),
+        self.mod_type as i32,
+        mod_id,
+        self.get_variation()
+      )
     }
   }
-  
+
   /// Removes the currently installed mod.
   #[inline]
   pub fn clear(&self) {
-    unsafe {
-      vehicle::remove_vehicle_mod(self.vehicle.into(), self.mod_type as i32)
-    }
+    unsafe { vehicle::remove_vehicle_mod(self.vehicle.into(), self.mod_type as i32) }
   }
 
   /// Checks if there is a mod currently installed
@@ -98,23 +96,26 @@ impl VehicleModType {
   }
 
   /// Sets the variation for the mod.
-  /// 
+  ///
   /// Only used for wheels, set to `true` for custom tires.
   #[inline]
   pub fn set_variation(&self, variation: bool) {
     unsafe {
-      vehicle::set_vehicle_mod(self.vehicle.into(), self.mod_type as i32, self.get(), variation)
+      vehicle::set_vehicle_mod(
+        self.vehicle.into(),
+        self.mod_type as i32,
+        self.get(),
+        variation
+      )
     }
   }
 
   /// Gets the variation for the mod.
-  /// 
+  ///
   /// Only used for wheels and returns `true` for custom tires.
   #[inline]
   #[must_use]
   pub fn get_variation(&self) -> bool {
-    unsafe {
-      vehicle::get_vehicle_mod_variation(self.vehicle.into(), self.mod_type as i32)
-    }
+    unsafe { vehicle::get_vehicle_mod_variation(self.vehicle.into(), self.mod_type as i32) }
   }
 }

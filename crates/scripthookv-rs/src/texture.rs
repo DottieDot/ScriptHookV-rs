@@ -1,6 +1,6 @@
-use std::{time::Duration, path::Path, ffi::CString};
+use std::{ffi::CString, path::Path, time::Duration};
 
-use shv_bindings::{drawTexture, createTexture};
+use shv_bindings::{createTexture, drawTexture};
 
 use crate::types::Vector2;
 
@@ -14,8 +14,12 @@ impl Texture {
   pub fn create(texture_file: &Path) -> Self {
     unsafe {
       let path = CString::new(
-        texture_file.as_os_str().to_str().expect("Path includes invalid unicode")
-      ).expect("CString::from failed");
+        texture_file
+          .as_os_str()
+          .to_str()
+          .expect("Path includes invalid unicode")
+      )
+      .expect("CString::from failed");
 
       Self {
         id: createTexture(path.as_ptr())
@@ -27,13 +31,13 @@ impl Texture {
   #[inline]
   pub fn draw(
     &self,
-    index: i32, 
-    level: i32, 
-    time: Duration, 
-    size: Vector2, 
-    center: Vector2, 
-    position: Vector2, 
-    rotation: f32, 
+    index: i32,
+    level: i32,
+    time: Duration,
+    size: Vector2,
+    center: Vector2,
+    position: Vector2,
+    rotation: f32,
     screen_height_scale_factor: f32,
     r: f32,
     g: f32,
@@ -42,7 +46,7 @@ impl Texture {
   ) {
     unsafe {
       drawTexture(
-        self.id, 
+        self.id,
         index,
         level,
         time.as_millis() as i32,
@@ -53,7 +57,7 @@ impl Texture {
         position.x,
         position.y,
         rotation,
-        screen_height_scale_factor, 
+        screen_height_scale_factor,
         r,
         g,
         b,
