@@ -5,7 +5,7 @@ use scripthookv::{get_game_version, GameVersion};
 use scripthookv::types::{Vehicle as NativeVehicle, Vector3, Bool};
 use crate::{natives::*, Model};
 
-use crate::entities::Entity;
+use crate::entities::{Entity, VehicleDoors};
 
 use super::{VehicleModManager, VehicleClass};
 
@@ -334,6 +334,12 @@ impl Vehicle {
   #[must_use]
   pub fn mod_manager(&self) -> VehicleModManager {
     VehicleModManager::new(*self)
+  }
+
+  #[inline]
+  #[must_use]
+  pub fn doors(&self) -> VehicleDoors {
+    VehicleDoors::new(*self)
   }
 
   #[inline]

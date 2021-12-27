@@ -43,7 +43,7 @@ pub enum EntityFromHandleError {
 }
 
 /// Creates an entity struct for a given handle.
-/// 
+///
 /// Creates the appropriate entity struct for the handle and returns an error if the handle is invalid.
 pub fn entity_from_handle(handle: NativeEntity) -> Result<Box<dyn Entity>, EntityFromHandleError> {
   unsafe {
@@ -55,8 +55,7 @@ pub fn entity_from_handle(handle: NativeEntity) -> Result<Box<dyn Entity>, Entit
         3 => Ok(Box::new(Object::try_from(handle).expect("Object::try_from failed"))),   // Object
         _ => Err(EntityFromHandleError::UnrecognizedEntity(UnrecognizedEntityTypeError { handle, entity_type }))
       }
-    }
-    else {
+    } else {
       Err(EntityFromHandleError::NotAnEntityHandle(NotAnEntityHandleError { handle }))
     }
   }
