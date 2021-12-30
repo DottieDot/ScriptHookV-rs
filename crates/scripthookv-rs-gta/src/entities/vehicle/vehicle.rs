@@ -7,9 +7,8 @@ use scripthookv::{get_game_version, GameVersion};
 
 use crate::entities::{Entity, VehicleDoors};
 
-use super::{VehicleClass, VehicleModManager, VehicleWheels};
+use super::{VehicleClass, VehicleColorManager, VehicleModManager, VehicleWheels};
 
-#[must_use]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Vehicle {
   handle: NativeVehicle
@@ -258,6 +257,12 @@ impl Vehicle {
   #[must_use]
   pub fn mod_manager(&self) -> VehicleModManager {
     VehicleModManager::new(*self)
+  }
+
+  #[inline]
+  #[must_use]
+  pub fn color_manager(&self) -> VehicleColorManager {
+    VehicleColorManager::new(*self)
   }
 
   #[inline]

@@ -14,7 +14,6 @@ pub enum VehicleNeonLights {
   Back  = 3
 }
 
-#[must_use]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct VehicleModManager {
   vehicle: Vehicle
@@ -22,7 +21,8 @@ pub struct VehicleModManager {
 
 impl VehicleModManager {
   #[inline]
-  pub fn new(vehicle: Vehicle) -> Self {
+  #[must_use]
+  pub(super) fn new(vehicle: Vehicle) -> Self {
     Self { vehicle }
   }
 
@@ -112,7 +112,6 @@ impl VehicleModManager {
   }
 }
 
-#[must_use]
 pub struct VehicleModTypeIterator {
   mod_manager: VehicleModManager,
   current:     VehicleModTypesIter
@@ -120,6 +119,7 @@ pub struct VehicleModTypeIterator {
 
 impl VehicleModTypeIterator {
   #[inline]
+  #[must_use]
   pub fn new(mod_manager: VehicleModManager) -> Self {
     Self {
       mod_manager,
@@ -131,6 +131,7 @@ impl VehicleModTypeIterator {
 impl Iterator for VehicleModTypeIterator {
   type Item = VehicleModType;
 
+  #[must_use]
   fn next(&mut self) -> Option<Self::Item> {
     self
       .current
@@ -139,15 +140,14 @@ impl Iterator for VehicleModTypeIterator {
   }
 }
 
-#[must_use]
 pub struct VehicleExtraIterator {
   mod_manager: VehicleModManager,
   current:     i32
 }
 
-#[must_use]
 impl VehicleExtraIterator {
   #[inline]
+  #[must_use]
   pub fn new(mod_manager: VehicleModManager) -> Self {
     Self {
       mod_manager,
@@ -159,6 +159,7 @@ impl VehicleExtraIterator {
 impl Iterator for VehicleExtraIterator {
   type Item = VehicleExtra;
 
+  #[must_use]
   fn next(&mut self) -> Option<Self::Item> {
     let extra = self.mod_manager.get_extra(self.current);
     if extra.is_some() {
@@ -168,7 +169,6 @@ impl Iterator for VehicleExtraIterator {
   }
 }
 
-#[must_use]
 pub struct VehicleToggleModIterator {
   mod_manager: VehicleModManager,
   current:     VehicleToggleModsIter
@@ -176,6 +176,7 @@ pub struct VehicleToggleModIterator {
 
 impl VehicleToggleModIterator {
   #[inline]
+  #[must_use]
   pub fn new(mod_manager: VehicleModManager) -> Self {
     Self {
       mod_manager,
@@ -188,6 +189,7 @@ impl Iterator for VehicleToggleModIterator {
   type Item = VehicleToggleMod;
 
   #[inline]
+  #[must_use]
   fn next(&mut self) -> Option<Self::Item> {
     self
       .current

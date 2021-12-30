@@ -3,8 +3,7 @@ use scripthookv::types::Ped as NativePed;
 
 use super::Entity;
 
-#[must_use]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Ped {
   handle: NativePed
 }
@@ -35,6 +34,8 @@ impl std::fmt::Display for NotAPedError {
 impl TryFrom<i32> for Ped {
   type Error = NotAPedError;
 
+  #[inline]
+  #[must_use]
   fn try_from(handle: i32) -> Result<Self, Self::Error> {
     unsafe {
       if entity::does_entity_exist(handle) && !entity::is_entity_a_ped(handle) {

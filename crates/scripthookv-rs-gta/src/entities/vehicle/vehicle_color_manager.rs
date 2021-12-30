@@ -15,7 +15,7 @@ pub struct VehicleColorManager {
 impl VehicleColorManager {
   #[inline]
   #[must_use]
-  pub fn new(vehicle: Vehicle) -> Self {
+  pub(super) fn new(vehicle: Vehicle) -> Self {
     Self { vehicle }
   }
 

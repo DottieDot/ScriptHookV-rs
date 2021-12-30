@@ -1,16 +1,17 @@
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 use strum_macros::EnumIter;
 
 use super::Vehicle;
 
 use crate::natives::*;
 
-#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
+#[repr(i32)]
 pub enum VehicleToggleMods {
   Turbo = 18,
   Xenon = 22
 }
 
-#[must_use]
 pub struct VehicleToggleMod {
   vehicle: Vehicle,
   mod_id:  VehicleToggleMods
@@ -18,7 +19,8 @@ pub struct VehicleToggleMod {
 
 impl VehicleToggleMod {
   #[inline]
-  pub fn new(vehicle: Vehicle, mod_id: VehicleToggleMods) -> Self {
+  #[must_use]
+  pub(super) fn new(vehicle: Vehicle, mod_id: VehicleToggleMods) -> Self {
     Self { vehicle, mod_id }
   }
 

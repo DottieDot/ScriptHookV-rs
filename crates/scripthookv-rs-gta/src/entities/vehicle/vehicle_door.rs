@@ -12,7 +12,7 @@ pub struct VehicleDoor {
 impl VehicleDoor {
   #[inline]
   #[must_use]
-  pub fn new(vehicle: Vehicle, door: VehicleDoorIndex) -> Self {
+  pub(super) fn new(vehicle: Vehicle, door: VehicleDoorIndex) -> Self {
     Self { vehicle, door }
   }
 
@@ -64,13 +64,6 @@ impl VehicleDoor {
 
   #[inline]
   pub fn set_angle_ratio(&self, ratio: f32) {
-    unsafe {
-      vehicle::set_vehicle_door_control(
-        self.vehicle.into(),
-        self.door.into(),
-        1,
-        ratio
-      )
-    }
+    unsafe { vehicle::set_vehicle_door_control(self.vehicle.into(), self.door.into(), 1, ratio) }
   }
 }

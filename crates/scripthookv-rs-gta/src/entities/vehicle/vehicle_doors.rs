@@ -14,7 +14,7 @@ pub struct VehicleDoors {
 impl VehicleDoors {
   #[inline]
   #[must_use]
-  pub fn new(vehicle: Vehicle) -> Self {
+  pub(super) fn new(vehicle: Vehicle) -> Self {
     Self { vehicle }
   }
 

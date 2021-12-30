@@ -8,11 +8,6 @@ pub struct VehicleWheel {
 
 impl VehicleWheel {
   pub(super) fn new(vehicle: Vehicle, bone_id: VehicleWheelBoneId) -> Self {
-    Self {
-      vehicle,
-      bone_id
-    }
+    Self { vehicle, bone_id }
   }
-
-
 }

@@ -2,7 +2,6 @@ use super::Vehicle;
 
 use crate::natives::*;
 
-#[must_use]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct VehicleExtra {
   vehicle:  Vehicle,
@@ -11,7 +10,8 @@ pub struct VehicleExtra {
 
 impl VehicleExtra {
   #[inline]
-  pub fn new(vehicle: Vehicle, extra_id: i32) -> Self {
+  #[must_use]
+  pub(super) fn new(vehicle: Vehicle, extra_id: i32) -> Self {
     Self { vehicle, extra_id }
   }
 

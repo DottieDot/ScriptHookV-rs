@@ -1,6 +1,6 @@
-use num_enum::TryFromPrimitive;
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-#[derive(TryFromPrimitive, Eq, PartialEq, Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
 #[repr(i32)]
 pub enum VehicleClass {
   Compacts       = 0,

@@ -3,8 +3,7 @@ use scripthookv::types::{Object as NativeObject, Vector3};
 
 use super::Entity;
 
-#[must_use]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Object {
   handle: NativeObject
 }
@@ -12,6 +11,7 @@ pub struct Object {
 impl Object {
   /// Creates a new object in the world.
   #[inline]
+  #[must_use]
   pub fn create(model: Model, coords: Vector3, dynamic: bool) -> Result<Self, CreateObjectError> {
     unsafe {
       let handle = object::create_object(model.hash(), coords, false, false, dynamic);
@@ -21,6 +21,7 @@ impl Object {
 
   /// Creates a new object in the world at an exact position.
   #[inline]
+  #[must_use]
   pub fn create_no_offset(
     model: Model,
     coords: Vector3,
@@ -34,6 +35,7 @@ impl Object {
 
   /// Tries finding the closest object of the given type.
   #[inline]
+  #[must_use]
   pub fn from_closest_of_type(
     coords: Vector3,
     radius: f32,

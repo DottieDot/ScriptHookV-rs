@@ -4,9 +4,9 @@ use crate::natives::*;
 
 use super::EntityBones;
 
-#[must_use]
 pub trait Entity {
   /// Gets the underlying entity handle.
+  #[must_use]
   fn handle(&self) -> NativeEntity;
 
   /// Checks if the entity exists.

@@ -1,9 +1,10 @@
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 use strum_macros::EnumIter;
 
 use super::Vehicle;
 use crate::natives::*;
 
-#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
 #[repr(i32)]
 pub enum VehicleModTypes {
   Spoiler         = 0,
@@ -60,7 +61,7 @@ pub struct VehicleModType {
 
 impl VehicleModType {
   #[inline]
-  pub fn new(vehicle: Vehicle, mod_type: VehicleModTypes) -> Self {
+  pub(super) fn new(vehicle: Vehicle, mod_type: VehicleModTypes) -> Self {
     Self { vehicle, mod_type }
   }
 
@@ -68,7 +69,7 @@ impl VehicleModType {
   #[inline]
   #[must_use]
   pub fn get(&self) -> i32 {
-    unsafe { vehicle::get_vehicle_mod(self.vehicle.into(), self.mod_type as i32) }
+    unsafe { vehicle::get_vehicle_mod(self.vehicle.into(), self.mod_type.into()) }
   }
 
   /// Sets the vehicle mod.
@@ -77,7 +78,7 @@ impl VehicleModType {
     unsafe {
       vehicle::set_vehicle_mod(
         self.vehicle.into(),
-        self.mod_type as i32,
+        self.mod_type.into(),
         mod_id,
         self.get_variation()
       )
@@ -87,7 +88,7 @@ impl VehicleModType {
   /// Removes the currently installed mod.
   #[inline]
   pub fn clear(&self) {
-    unsafe { vehicle::remove_vehicle_mod(self.vehicle.into(), self.mod_type as i32) }
+    unsafe { vehicle::remove_vehicle_mod(self.vehicle.into(), self.mod_type.into()) }
   }
 
   /// Checks if there is a mod currently installed
@@ -104,7 +105,7 @@ impl VehicleModType {
     unsafe {
       vehicle::set_vehicle_mod(
         self.vehicle.into(),
-        self.mod_type as i32,
+        self.mod_type.into(),
         self.get(),
         variation
       )
@@ -117,6 +118,6 @@ impl VehicleModType {
   #[inline]
   #[must_use]
   pub fn get_variation(&self) -> bool {
-    unsafe { vehicle::get_vehicle_mod_variation(self.vehicle.into(), self.mod_type as i32) }
+    unsafe { vehicle::get_vehicle_mod_variation(self.vehicle.into(), self.mod_type.into()) }
   }
 }
