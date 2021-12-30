@@ -3,7 +3,7 @@ use super::Vehicle;
 use crate::natives::*;
 
 #[must_use]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct VehicleExtra {
   vehicle:  Vehicle,
   extra_id: i32

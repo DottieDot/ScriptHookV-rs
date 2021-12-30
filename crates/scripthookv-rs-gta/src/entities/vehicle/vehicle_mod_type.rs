@@ -3,7 +3,8 @@ use strum_macros::EnumIter;
 use super::Vehicle;
 use crate::natives::*;
 
-#[derive(Debug, Clone, Copy, EnumIter)]
+#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq)]
+#[repr(i32)]
 pub enum VehicleModTypes {
   Spoiler         = 0,
   FrontBumper     = 1,

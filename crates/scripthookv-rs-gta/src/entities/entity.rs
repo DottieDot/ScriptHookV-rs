@@ -2,6 +2,8 @@ use scripthookv::types::{Entity as NativeEntity, Vector3};
 
 use crate::natives::*;
 
+use super::EntityBones;
+
 #[must_use]
 pub trait Entity {
   /// Gets the underlying entity handle.
@@ -297,5 +299,11 @@ pub trait Entity {
   #[inline]
   fn set_collisions(&self, enable: bool) {
     unsafe { entity::set_entity_collision(self.handle(), enable, true) }
+  }
+
+  #[inline]
+  #[must_use]
+  fn bones(&self) -> EntityBones {
+    EntityBones::new(self.handle())
   }
 }

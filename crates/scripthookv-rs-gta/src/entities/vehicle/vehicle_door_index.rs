@@ -1,7 +1,7 @@
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use strum_macros::EnumIter;
 
-#[derive(Debug, Clone, Copy, EnumIter, TryFromPrimitive, IntoPrimitive)]
+#[derive(Debug, Clone, Copy, EnumIter, TryFromPrimitive, IntoPrimitive, PartialEq, Eq)]
 #[repr(i32)]
 pub enum VehicleDoorIndex {
   FrontLeftDoor  = 0,

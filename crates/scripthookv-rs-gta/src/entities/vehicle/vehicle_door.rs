@@ -2,8 +2,8 @@ use crate::{
   entities::{Vehicle, VehicleDoorIndex},
   natives::*
 };
-use std::time::Duration;
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct VehicleDoor {
   vehicle: Vehicle,
   door:    VehicleDoorIndex
@@ -62,14 +62,13 @@ impl VehicleDoor {
     unsafe { vehicle::set_vehicle_door_broken(self.vehicle.into(), self.door.into(), delete_door) }
   }
 
-  // TODO: TEST DURATION
   #[inline]
-  pub fn set_angle_ratio(&self, ratio: f32, duration: Duration) {
+  pub fn set_angle_ratio(&self, ratio: f32) {
     unsafe {
       vehicle::set_vehicle_door_control(
         self.vehicle.into(),
         self.door.into(),
-        duration.as_millis() as i32,
+        1,
         ratio
       )
     }

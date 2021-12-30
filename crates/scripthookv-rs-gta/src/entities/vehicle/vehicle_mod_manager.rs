@@ -15,7 +15,7 @@ pub enum VehicleNeonLights {
 }
 
 #[must_use]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct VehicleModManager {
   vehicle: Vehicle
 }

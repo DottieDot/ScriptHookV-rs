@@ -1,9 +1,12 @@
 use crate::entities::{VehicleDoor, VehicleDoorIndex, VehicleDoorIndexIter};
-use crate::{entities::Vehicle, natives::*};
+use crate::{
+  entities::{Entity, Vehicle},
+  natives::*
+};
 
 use strum::IntoEnumIterator;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct VehicleDoors {
   vehicle: Vehicle
 }
@@ -17,8 +20,15 @@ impl VehicleDoors {
 
   #[inline]
   #[must_use]
-  pub fn has_door(&self, _door: VehicleDoorIndex) -> bool {
-    true // TODO: Implement this
+  pub fn has_door(&self, door: VehicleDoorIndex) -> bool {
+    match door {
+      VehicleDoorIndex::FrontLeftDoor => self.vehicle.bones().has_bone_with_name("door_dside_f"),
+      VehicleDoorIndex::FrontRightDoor => self.vehicle.bones().has_bone_with_name("door_pside_f"),
+      VehicleDoorIndex::BackLeftDoor => self.vehicle.bones().has_bone_with_name("door_dside_r"),
+      VehicleDoorIndex::BackRightDoor => self.vehicle.bones().has_bone_with_name("door_pside_r"),
+      VehicleDoorIndex::Hood => self.vehicle.bones().has_bone_with_name("bonnet"),
+      VehicleDoorIndex::Trunk => self.vehicle.bones().has_bone_with_name("boot")
+    }
   }
 
   #[inline]

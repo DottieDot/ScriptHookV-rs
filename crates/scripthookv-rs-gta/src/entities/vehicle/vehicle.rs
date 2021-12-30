@@ -7,10 +7,10 @@ use scripthookv::{get_game_version, GameVersion};
 
 use crate::entities::{Entity, VehicleDoors};
 
-use super::{VehicleClass, VehicleModManager};
+use super::{VehicleClass, VehicleModManager, VehicleWheels};
 
 #[must_use]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Vehicle {
   handle: NativeVehicle
 }
@@ -333,6 +333,12 @@ impl Vehicle {
   #[inline]
   pub fn set_brake_lights_on(&self, toggle: bool) {
     unsafe { vehicle::set_vehicle_brake_lights(self.handle, toggle) }
+  }
+
+  #[inline]
+  #[must_use]
+  pub fn wheels(&self) -> VehicleWheels {
+    VehicleWheels::new(*self)
   }
 }
 

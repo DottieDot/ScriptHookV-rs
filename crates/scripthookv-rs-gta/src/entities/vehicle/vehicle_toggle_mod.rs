@@ -4,7 +4,7 @@ use super::Vehicle;
 
 use crate::natives::*;
 
-#[derive(Debug, Clone, Copy, EnumIter)]
+#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq)]
 pub enum VehicleToggleMods {
   Turbo = 18,
   Xenon = 22

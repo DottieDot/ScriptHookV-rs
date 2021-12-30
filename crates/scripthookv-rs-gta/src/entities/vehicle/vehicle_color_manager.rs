@@ -1,11 +1,13 @@
-use super::Vehicle;
+use std::ffi::{CStr, CString};
+
+use super::{Vehicle, VehicleLicensePlateStyle};
 
 use crate::{
   color::{Color, RGB},
   natives::*
 };
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct VehicleColorManager {
   vehicle: Vehicle
 }
@@ -181,7 +183,7 @@ impl VehicleColorManager {
         &mut rgb.2
       );
     }
-    RGB::new(rgb.0 as u8, rgb.0 as u8, rgb.0 as u8).into()
+    RGB::new(rgb.0 as u8, rgb.1 as u8, rgb.2 as u8).into()
   }
 
   #[inline]
@@ -215,7 +217,7 @@ impl VehicleColorManager {
         &mut rgb.2
       );
     }
-    RGB::new(rgb.0 as u8, rgb.0 as u8, rgb.0 as u8).into()
+    RGB::new(rgb.0 as u8, rgb.1 as u8, rgb.2 as u8).into()
   }
 
   #[inline]
@@ -247,5 +249,40 @@ impl VehicleColorManager {
   #[must_use]
   pub fn has_custom_secondary_color(&self) -> bool {
     unsafe { vehicle::get_is_vehicle_secondary_colour_custom(self.vehicle.into()) }
+  }
+
+  /// Returns the current license plate style.
+  ///
+  /// Panics if `get_vehicle_number_plate_text_index` returns a style that is unaccounted for.
+  #[inline]
+  #[must_use]
+  pub fn license_plate_style(&self) -> VehicleLicensePlateStyle {
+    let style = unsafe { vehicle::get_vehicle_number_plate_text_index(self.vehicle.into()) };
+    VehicleLicensePlateStyle::try_from(style)
+      .expect("invalid license plate style returned from get_vehicle_number_plate_text_index")
+  }
+
+  #[inline]
+  pub fn set_license_plate_style(&self, style: VehicleLicensePlateStyle) {
+    unsafe { vehicle::set_vehicle_number_plate_text_index(self.vehicle.into(), style.into()) }
+  }
+
+  #[inline]
+  #[must_use]
+  pub fn license_plate_text(&self) -> String {
+    unsafe {
+      let raw = vehicle::get_vehicle_number_plate_text(self.vehicle.into());
+      let cstring = CStr::from_ptr(raw);
+      cstring
+        .to_str()
+        .expect("invalid string returned from get_vehicle_number_plate_tex")
+        .to_owned()
+    }
+  }
+
+  #[inline]
+  pub fn set_license_plate_text(&self, text: &str) {
+    let cstring = CString::new(text).expect("CString::new failed");
+    unsafe { vehicle::set_vehicle_number_plate_text(self.vehicle.into(), cstring.as_ptr()) }
   }
 }

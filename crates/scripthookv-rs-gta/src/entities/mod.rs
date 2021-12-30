@@ -5,11 +5,15 @@ mod entity;
 mod object;
 mod ped;
 mod vehicle;
+mod entity_bones;
+mod entity_bone;
 
 pub use entity::*;
 pub use object::*;
 pub use ped::*;
 pub use vehicle::*;
+pub use entity_bones::*;
+pub use entity_bone::*;
 
 /// The provided handle is not an entity handle.
 #[derive(Debug)]
