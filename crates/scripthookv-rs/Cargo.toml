@@ -17,5 +17,4 @@ default-target = "x86_64-pc-windows-msvc"
 targets = ["x86_64-pc-windows-msvc"]
 
 [dependencies]
-winapi = { version = "0.3.9", features = ["minwindef"] }
 libscripthookv-sys = "0.1.0"

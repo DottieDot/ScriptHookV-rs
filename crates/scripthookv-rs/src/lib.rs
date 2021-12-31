@@ -1,3 +1,5 @@
+use std::ffi::c_void;
+
 use shv_bindings::getGlobalPtr;
 
 pub extern crate shv_bindings;
@@ -11,12 +13,18 @@ mod game_version;
 mod script;
 mod texture;
 mod world;
+mod scripthookv_builder;
+mod scripthookv;
 
-pub use callbacks::*;
+pub(crate) use callbacks::*;
 pub use game_version::*;
 pub use script::*;
 pub use texture::*;
 pub use world::*;
+pub use scripthookv_builder::*;
+pub use scripthookv::*;
+
+pub type ModuleHandle = *const c_void;
 
 /// Gets a script global and returns it as a mutable reference.
 ///

@@ -1,10 +1,9 @@
-use scripthookv::{register_script, remove_script, script_yield};
-use natives::{misc, vehicle, player, entity, streaming};
+use scripthookv::{script_yield, ScriptHookVBuilder, ScriptHookV, ModuleHandle};
+use scripthookv_rs_macros::shv_entrypoint;
 use std::ffi::CString;
-use winapi::shared::minwindef::{HINSTANCE, DWORD, LPVOID, BOOL};
-use winapi::um::winnt::{DLL_PROCESS_ATTACH, DLL_PROCESS_DETACH};
 
 mod natives;
+use natives::*;
 
 extern "C" fn script_main() {
   unsafe {
@@ -32,22 +31,9 @@ extern "C" fn script_main() {
   }
 }
 
-#[no_mangle]
-#[allow(non_snake_case)]
-pub extern "stdcall" fn DllMain(
-  instance: HINSTANCE,
-  reason: DWORD,
-  _reserved: LPVOID,
-) ->BOOL {
-  match reason {
-    DLL_PROCESS_ATTACH => {
-      register_script(instance, script_main);
-      1
-    }
-    DLL_PROCESS_DETACH => {
-      remove_script(instance);
-      1
-    },
-    _ => 1,
-  }
+#[shv_entrypoint]
+fn entrypoint(module: ModuleHandle) -> ScriptHookV {
+  ScriptHookVBuilder::new(module)
+    .script(script_main)
+    .build()
 }

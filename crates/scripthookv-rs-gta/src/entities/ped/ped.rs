@@ -1,7 +1,7 @@
 use crate::natives::*;
 use scripthookv::types::Ped as NativePed;
 
-use super::Entity;
+use crate::entities::Entity;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Ped {

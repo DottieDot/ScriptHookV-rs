@@ -1,8 +1,8 @@
-use std::os::raw::c_void;
 use std::time::Duration;
-use winapi::shared::minwindef::HINSTANCE;
 
 use shv_bindings::{scriptRegister, scriptRegisterAdditionalThread, scriptUnregister, scriptWait};
+
+use crate::ModuleHandle;
 
 /// Pauses script execution for the specified duration.
 ///
@@ -40,8 +40,8 @@ pub fn script_yield() {
 /// register_script(instance, script_main);
 /// ```
 #[inline]
-pub fn register_script(module: HINSTANCE, entrypoint: extern "C" fn()) {
-  unsafe { scriptRegister(module as *const c_void, entrypoint) }
+pub(crate) fn register_script(module: ModuleHandle, entrypoint: extern "C" fn()) {
+  unsafe { scriptRegister(module, entrypoint) }
 }
 
 /// Used for registering secondary script functions.
@@ -55,8 +55,8 @@ pub fn register_script(module: HINSTANCE, entrypoint: extern "C" fn()) {
 /// register_additional_script_thread(instance, background_script);
 /// ```
 #[inline]
-pub fn register_additional_script_thread(module: HINSTANCE, entrypoint: extern "C" fn()) {
-  unsafe { scriptRegisterAdditionalThread(module as *const c_void, entrypoint) }
+pub(crate) fn register_additional_script_thread(module: ModuleHandle, entrypoint: extern "C" fn()) {
+  unsafe { scriptRegisterAdditionalThread(module, entrypoint) }
 }
 
 /// Removes all script created with the given module instance.
@@ -66,6 +66,6 @@ pub fn register_additional_script_thread(module: HINSTANCE, entrypoint: extern "
 /// remove_script(instance);
 /// ```
 #[inline]
-pub fn remove_script(module: HINSTANCE) {
-  unsafe { scriptUnregister(module as *const c_void) }
+pub(crate) fn remove_script(module: ModuleHandle) {
+  unsafe { scriptUnregister(module) }
 }
