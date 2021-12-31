@@ -24,6 +24,7 @@ Add the following to your `cargo.toml`:
 
 ```toml
 scripthookv-rs = "0.2.1"
+once_cell = "1.9.0"
 ```
 
 ### scripthookv-rs-gta
