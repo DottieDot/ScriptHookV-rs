@@ -23,7 +23,7 @@ This crate contains a wrapped api for ScriptHookV
 Add the following to your `cargo.toml`:
 
 ```toml
-scripthookv-rs = "0.1.6"
+scripthookv-rs = "0.2.1"
 ```
 
 ### scripthookv-rs-gta
@@ -34,32 +34,23 @@ This crate has not been published yet.
 
 ## Usage
 
-### DllMain
-Your DllMain should look something like this.
+### Entrypoint
 
+For your entrypoint you can use the `shv_entrypoint` macro. This macro generates a DllMain for you.
 ```rs
 extern "C" fn script_main() {
-  // Logic here
+  loop {
+    // On tick logic
+
+    script_yield();
+  }
 }
 
-#[no_mangle]
-#[allow(non_snake_case)]
-pub extern "stdcall" fn DllMain(
-  instance: HINSTANCE,
-  reason: DWORD,
-  _reserved: LPVOID,
-) ->BOOL {
-  match reason {
-    DLL_PROCESS_ATTACH => {
-      register_script(instance, script_main);
-      1
-    }
-    DLL_PROCESS_DETACH => {
-      remove_script(instance);
-      1
-    },
-    _ => 1,
-  }
+#[shv_entrypoint]
+fn entrypoint(module: ModuleHandle) -> ScriptHookV {
+  ScriptHookVBuilder::new(module)
+    .script(script_main)
+    .build()
 }
 ```
 

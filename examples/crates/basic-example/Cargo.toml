@@ -10,5 +10,4 @@ crate-type = ["dylib"]
 
 [dependencies]
 scripthookv-rs = { path = "../../../crates/scripthookv-rs" }
-scripthookv-rs-macros = { path = "../../../crates/scripthookv-rs-macros" }
 once_cell = "1.9.0"

@@ -1,6 +1,6 @@
 [package]
 name = "scripthookv-rs"
-version = "0.1.6"
+version = "0.2.1"
 edition = "2021"
 description = "Rust bindings for ScriptHookV"
 license = "MIT"
@@ -18,3 +18,4 @@ targets = ["x86_64-pc-windows-msvc"]
 
 [dependencies]
 libscripthookv-sys = "0.1.0"
+scripthookv-rs-macros = "0.1.0"

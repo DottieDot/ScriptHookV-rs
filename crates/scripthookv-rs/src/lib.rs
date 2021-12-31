@@ -24,6 +24,8 @@ pub use world::*;
 pub use scripthookv_builder::*;
 pub use scripthookv::*;
 
+pub use scripthookv_rs_macros::*;
+
 pub type ModuleHandle = *const c_void;
 
 /// Gets a script global and returns it as a mutable reference.

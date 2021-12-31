@@ -1,5 +1,4 @@
-use scripthookv::{script_yield, ScriptHookVBuilder, ScriptHookV, ModuleHandle};
-use scripthookv_rs_macros::shv_entrypoint;
+use scripthookv::{script_yield, ScriptHookVBuilder, ScriptHookV, ModuleHandle, shv_entrypoint};
 use std::ffi::CString;
 
 mod natives;
