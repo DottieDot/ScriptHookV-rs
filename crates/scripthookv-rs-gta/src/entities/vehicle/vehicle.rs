@@ -373,7 +373,7 @@ impl TryFrom<i32> for Vehicle {
 
   fn try_from(handle: i32) -> Result<Self, Self::Error> {
     unsafe {
-      if entity::does_entity_exist(handle) && !entity::is_entity_a_vehicle(handle) {
+      if entity::does_entity_exist(handle) && entity::is_entity_a_vehicle(handle) {
         Ok(Self { handle })
       } else {
         Err(Self::Error { handle })
