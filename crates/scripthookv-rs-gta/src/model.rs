@@ -1,6 +1,6 @@
-use std::{hash::Hasher, time::Duration, time::Instant};
+use std::{time::{Duration, Instant}};
 
-use joaat::JoaatHasher;
+use joaat::hash_ascii_lowercase;
 use scripthookv::{script_yield, types::Hash};
 
 use crate::natives::*;
@@ -38,7 +38,7 @@ impl Model {
 
     self.request();
     while !self.loaded() {
-      if stop_at >= Instant::now() {
+      if Instant::now() >= stop_at {
         return Err(());
       }
       script_yield()
@@ -97,8 +97,6 @@ impl TryFrom<&str> for Model {
 
   #[inline]
   fn try_from(value: &str) -> Result<Self, Self::Error> {
-    let mut hasher = JoaatHasher::default();
-    hasher.write(value.as_bytes());
-    Model::try_from(hasher.finish() as u32)
+    Model::try_from(hash_ascii_lowercase(value.as_bytes()))
   }
 }
