@@ -35,7 +35,6 @@ impl TryFrom<i32> for Ped {
   type Error = NotAPedError;
 
   #[inline]
-  #[must_use]
   fn try_from(handle: i32) -> Result<Self, Self::Error> {
     unsafe {
       if entity::does_entity_exist(handle) && entity::is_entity_a_ped(handle) {
@@ -47,10 +46,10 @@ impl TryFrom<i32> for Ped {
   }
 }
 
-impl Into<i32> for Ped {
+impl From<Ped> for i32 {
   #[inline]
   #[must_use]
-  fn into(self) -> i32 {
-    self.handle()
+  fn from(p: Ped) -> Self {
+    p.handle()
   }
 }

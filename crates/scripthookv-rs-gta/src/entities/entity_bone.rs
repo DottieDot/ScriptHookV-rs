@@ -13,7 +13,7 @@ impl EntityBone {
   #[must_use]
   pub(super) fn new(entity_handle: i32, bone_index: i32) -> Self {
     Self {
-      entity_handle: entity_handle,
+      entity_handle,
       bone_index
     }
   }

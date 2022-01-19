@@ -6,20 +6,20 @@ use shv_bindings::getGameVersion;
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum GameVersion {
-  Build_335_2_Steam     = 00,
-  Build_335_2_NotSteam  = 01,
+  Build_335_2_Steam     =  0,
+  Build_335_2_NotSteam  =  1,
 
-  Build_350_1_Steam     = 02,
-  Build_350_2_NotSteam  = 03,
+  Build_350_1_Steam     =  2,
+  Build_350_2_NotSteam  =  3,
 
-  Build_372_2_Steam     = 04,
-  Build_372_2_NotSteam  = 05,
+  Build_372_2_Steam     =  4,
+  Build_372_2_NotSteam  =  5,
 
-  Build_393_2_Steam     = 06,
-  Build_393_2_NotSteam  = 07,
+  Build_393_2_Steam     =  6,
+  Build_393_2_NotSteam  =  7,
 
-  Build_393_4_Steam     = 08,
-  Build_393_4_NotSteam  = 09,
+  Build_393_4_Steam     =  8,
+  Build_393_4_NotSteam  =  9,
 
   Build_463_1_Steam     = 10,
   Build_463_1_NotSteam  = 11,

@@ -382,10 +382,10 @@ impl TryFrom<i32> for Vehicle {
   }
 }
 
-impl Into<i32> for Vehicle {
+impl From<Vehicle> for i32 {
   #[inline]
   #[must_use]
-  fn into(self) -> i32 {
-    self.handle()
+  fn from(v: Vehicle) -> Self {
+    v.handle()
   }
 }

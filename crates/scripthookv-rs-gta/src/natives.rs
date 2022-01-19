@@ -1,3 +1,6 @@
+#![allow(unknown_lints)]
+#![allow(clippy::all)]
+
 // Generated on 12/18/2021, 4:41:45 PM
 // http://localhost:3000
 

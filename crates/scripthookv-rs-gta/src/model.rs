@@ -1,9 +1,8 @@
 use std::{time::{Duration, Instant}};
 
-use joaat::hash_ascii_lowercase;
 use scripthookv::{script_yield, types::Hash};
 
-use crate::natives::*;
+use crate::{natives::*, game::generate_hash};
 
 #[must_use]
 #[derive(Debug, Clone, Copy)]
@@ -97,6 +96,6 @@ impl TryFrom<&str> for Model {
 
   #[inline]
   fn try_from(value: &str) -> Result<Self, Self::Error> {
-    Model::try_from(hash_ascii_lowercase(value.as_bytes()))
+    Model::try_from(generate_hash(value))
   }
 }

@@ -62,7 +62,7 @@ impl VehicleModManager {
   pub fn has_mod_of_type(&self, mod_type: VehicleModTypes) -> bool {
     self
       .get_mod_type(mod_type)
-      .and_then(|m| Some(m.has_mod()))
+      .map(|m| m.has_mod())
       .unwrap_or(false)
   }
 
@@ -194,6 +194,6 @@ impl Iterator for VehicleToggleModIterator {
     self
       .current
       .next()
-      .and_then(|m| Some(self.mod_manager.get_toggle_mod(m)))
+      .map(|m| self.mod_manager.get_toggle_mod(m))
   }
 }

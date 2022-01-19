@@ -34,6 +34,9 @@ pub type ModuleHandle = *const c_void;
 /// /* sets script global 1337 to 10 */
 /// *get_global::<int>(1337) = 10
 /// ```
+/// 
+/// # Safety
+/// This function will not do any checks in regard to the type and validity of the global. It will interpret whatever is in memory as `T`.
 #[inline]
 pub unsafe fn get_global<T>(global_id: i32) -> &'static mut T {
   let ptr = getGlobalPtr(global_id);

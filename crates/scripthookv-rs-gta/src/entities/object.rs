@@ -11,7 +11,6 @@ pub struct Object {
 impl Object {
   /// Creates a new object in the world.
   #[inline]
-  #[must_use]
   pub fn create(model: Model, coords: Vector3, dynamic: bool) -> Result<Self, CreateObjectError> {
     unsafe {
       let handle = object::create_object(model.hash(), coords, false, false, dynamic);
@@ -21,7 +20,6 @@ impl Object {
 
   /// Creates a new object in the world at an exact position.
   #[inline]
-  #[must_use]
   pub fn create_no_offset(
     model: Model,
     coords: Vector3,
@@ -132,10 +130,10 @@ impl std::fmt::Display for CreateObjectError {
   }
 }
 
-impl Into<i32> for Object {
+impl From<Object> for i32 {
   #[inline]
   #[must_use]
-  fn into(self) -> i32 {
-    self.handle()
+  fn from(o: Object) -> Self {
+    o.handle()
   }
 }
