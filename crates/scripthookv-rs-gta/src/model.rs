@@ -1,8 +1,8 @@
-use std::{time::{Duration, Instant}};
+use std::time::{Duration, Instant};
 
 use scripthookv::{script_yield, types::Hash};
 
-use crate::{natives::*, game::generate_hash};
+use crate::{game::generate_hash, natives::*};
 
 #[must_use]
 #[derive(Debug, Clone, Copy)]

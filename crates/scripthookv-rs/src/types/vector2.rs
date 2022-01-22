@@ -7,7 +7,6 @@ use std::{
 /// A vector2 representation that can be used with natives.
 ///
 /// To make it compatible with natives every field is 8 byte aligned.
-#[must_use]
 #[repr(C, align(1))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vector2 {
@@ -20,6 +19,7 @@ pub struct Vector2 {
 impl Vector2 {
   /// Creates a new Vector2.
   #[inline]
+  #[must_use]
   pub fn new(x: f32, y: f32) -> Self {
     Self {
       x,
@@ -31,6 +31,7 @@ impl Vector2 {
 
   /// Creates a new Vector2 initialized with 0.
   #[inline]
+  #[must_use]
   pub fn zero() -> Self {
     Self::new(0f32, 0f32)
   }
@@ -42,6 +43,7 @@ impl Vector2 {
   }
 
   /// Creates a normalized copy of the vector.
+  #[must_use]
   pub fn normalized(&self) -> Self {
     let length = self.length();
     if length == 0f32 {
@@ -77,6 +79,7 @@ impl Add<Vector2> for Vector2 {
   type Output = Vector2;
 
   #[inline]
+  #[must_use]
   fn add(self, rhs: Vector2) -> Self::Output {
     Vector2::new(self.x + rhs.x, self.y + rhs.y)
   }
@@ -86,6 +89,7 @@ impl Sub<Vector2> for Vector2 {
   type Output = Vector2;
 
   #[inline]
+  #[must_use]
   fn sub(self, rhs: Vector2) -> Self::Output {
     Vector2::new(self.x - rhs.x, self.y - rhs.y)
   }
@@ -95,6 +99,7 @@ impl Mul<f32> for Vector2 {
   type Output = Vector2;
 
   #[inline]
+  #[must_use]
   fn mul(self, rhs: f32) -> Self::Output {
     Vector2::new(self.x * rhs, self.y * rhs)
   }

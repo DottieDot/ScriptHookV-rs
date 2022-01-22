@@ -1,20 +1,22 @@
+use log::info;
 use shv_bindings::{KeyboardHandler, PresentCallback};
 
-use crate::{GameVersion, ScriptHookV, ModuleHandle};
+use crate::{builder_plugin::BuilderPlugin, GameVersion, ModuleHandle, ScriptHookV};
 
 pub type ScriptFn = extern "C" fn();
 
 #[derive(Debug)]
-pub struct ScriptHookVBuilder {
+pub struct ScriptHookVBuilder<'b> {
   pub(crate) module:            ModuleHandle,
   pub(crate) scripts:           Vec<ScriptFn>,
   pub(crate) present_callbacks: Vec<PresentCallback>,
   pub(crate) keyboard_handlers: Vec<KeyboardHandler>,
   pub(crate) min_version:       Option<GameVersion>,
-  pub(crate) max_version:       Option<GameVersion>
+  pub(crate) max_version:       Option<GameVersion>,
+  pub(crate) plugins:           Vec<&'b mut dyn BuilderPlugin>
 }
 
-impl ScriptHookVBuilder {
+impl<'b> ScriptHookVBuilder<'b> {
   #[inline]
   #[must_use]
   pub fn new(module: ModuleHandle) -> Self {
@@ -24,7 +26,8 @@ impl ScriptHookVBuilder {
       present_callbacks: Vec::default(),
       keyboard_handlers: Vec::default(),
       min_version: None,
-      max_version: None
+      max_version: None,
+      plugins: Vec::default()
     }
   }
 
@@ -59,8 +62,28 @@ impl ScriptHookVBuilder {
   }
 
   #[inline]
+  pub fn plugin(&mut self, plugin: &'b mut dyn BuilderPlugin) -> &mut Self {
+    info!("registered builder plugin {}", plugin.name());
+    plugin.build(self);
+    self.plugins.push(plugin);
+    self
+  }
+
+  #[inline]
   #[must_use]
-  pub fn build(&self) -> ScriptHookV {
-    ScriptHookV::init_from_builder(self)
+  pub fn build(mut self) -> ScriptHookV {
+    let instance = ScriptHookV::new(
+      self.module,
+      self.scripts,
+      self.present_callbacks,
+      self.keyboard_handlers,
+      self.min_version,
+      self.max_version
+    );
+    for plugin in &mut self.plugins {
+      info!("initializing builder plugin {}", plugin.name());
+      plugin.init(&instance)
+    }
+    instance
   }
 }

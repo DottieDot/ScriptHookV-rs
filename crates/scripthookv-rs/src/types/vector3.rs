@@ -7,7 +7,6 @@ use std::{
 /// A vector3 representation that can be used with natives.
 ///
 /// To make it compatible with natives every field is 8 byte aligned.
-#[must_use]
 #[repr(C, align(1))]
 #[derive(Clone, Copy, Debug)]
 pub struct Vector3 {
@@ -22,6 +21,7 @@ pub struct Vector3 {
 impl Vector3 {
   /// Creates a new Vector3.
   #[inline]
+  #[must_use]
   pub fn new(x: f32, y: f32, z: f32) -> Self {
     Self {
       x,
@@ -35,16 +35,19 @@ impl Vector3 {
 
   /// Creates a new Vector3 initialized with 0.
   #[inline]
+  #[must_use]
   pub fn zero() -> Self {
     Self::new(0f32, 0f32, 0f32)
   }
 
   /// Gets the length of the vector.
+  #[must_use]
   pub fn length(&self) -> f32 {
     (self.x.powf(2f32) + self.y.powf(2f32) + self.z.powf(2f32)).sqrt()
   }
 
   /// Creates a normalized copy of the vector.
+  #[must_use]
   pub fn normalized(&self) -> Self {
     let length = self.length();
     if length == 0f32 {
@@ -61,12 +64,14 @@ impl Vector3 {
 
   /// Gets the distance to another vector.
   #[inline]
+  #[must_use]
   pub fn distance_to(&self, to: &Vector3) -> f32 {
     (*to - *self).length()
   }
 
   /// Gets the distance to another vector ignoring the z coordinate.
   #[inline]
+  #[must_use]
   pub fn distance_to_2d(&self, to: &Vector3) -> f32 {
     let mut tmp = *to - *self;
     tmp.z = 0f32;
@@ -75,6 +80,7 @@ impl Vector3 {
 
   /// Gets the dot product with another vector.
   #[inline]
+  #[must_use]
   pub fn dot(&self, rhs: &Vector3) -> f32 {
     self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
   }
@@ -90,6 +96,7 @@ impl Add<Vector3> for Vector3 {
   type Output = Vector3;
 
   #[inline]
+  #[must_use]
   fn add(self, rhs: Vector3) -> Self::Output {
     Vector3::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
   }
@@ -99,6 +106,7 @@ impl Sub<Vector3> for Vector3 {
   type Output = Vector3;
 
   #[inline]
+  #[must_use]
   fn sub(self, rhs: Vector3) -> Self::Output {
     Vector3::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
   }
@@ -116,6 +124,7 @@ impl Mul<f32> for Vector3 {
 
 impl PartialEq<Vector3> for Vector3 {
   #[inline]
+  #[must_use]
   fn eq(&self, other: &Vector3) -> bool {
     self.x == other.x && self.y == other.y && self.z == other.z
   }
@@ -123,6 +132,7 @@ impl PartialEq<Vector3> for Vector3 {
 
 impl PartialOrd<Vector3> for Vector3 {
   #[inline]
+  #[must_use]
   fn partial_cmp(&self, other: &Vector3) -> Option<std::cmp::Ordering> {
     match self.x.partial_cmp(&other.x) {
       Some(core::cmp::Ordering::Equal) => {}

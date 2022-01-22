@@ -10,7 +10,7 @@ pub fn native_init(hash: NativeHash) {
 }
 
 /// Add a parameter to the current native call
-/// 
+///
 /// # Safety
 /// This function will split the provided struct up in chunks of 8 bytes and pass them as individual parameters.
 #[inline]
@@ -27,7 +27,7 @@ pub unsafe fn native_push<T: Copy>(value: &T) {
 }
 
 /// Confirm the current native call and cast its result.
-/// 
+///
 /// # Safety
 /// This will function will convert the return value to `T` without any checks. It is the responsibility of the developer to verify if the return type is correct.
 #[inline]
