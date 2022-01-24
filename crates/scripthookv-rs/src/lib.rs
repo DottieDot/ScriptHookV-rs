@@ -11,11 +11,13 @@ pub mod types;
 mod builder_plugin;
 mod callbacks;
 mod game_version;
+pub mod memory;
 mod script;
 mod scripthookv;
 mod scripthookv_builder;
 mod texture;
 mod world;
+mod winapi;
 
 pub(crate) use callbacks::*;
 pub use game_version::*;

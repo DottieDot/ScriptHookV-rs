@@ -1,7 +1,7 @@
 use log::info;
 use shv_bindings::{KeyboardHandler, PresentCallback};
 
-use crate::{builder_plugin::BuilderPlugin, GameVersion, ModuleHandle, ScriptHookV};
+use crate::{builder_plugin::BuilderPlugin, GameVersion, ModuleHandle, ScriptHookV, memory::{Scannable, MemoryLocation}};
 
 pub type ScriptFn = extern "C" fn();
 
@@ -66,6 +66,26 @@ impl<'b> ScriptHookVBuilder<'b> {
     info!("registered builder plugin {}", plugin.name());
     plugin.build(self);
     self.plugins.push(plugin);
+    self
+  }
+
+  #[inline]
+  pub fn sig(&mut self, name: &str, scannable: &dyn Scannable) -> &mut Self {
+    self.sig_with_offset(name, scannable, |l| l)
+  }
+
+  #[inline]
+  pub fn sig_with_offset(&mut self, name: &str, scannable: &dyn Scannable, offset_fn: fn(MemoryLocation) -> MemoryLocation) -> &mut Self {
+    self.sig_with_offset_and_scanner("gta", name, scannable, offset_fn)
+  }
+
+  #[inline]
+  pub fn sig_with_scanner(&mut self, scanner: &str, name: &str, scannable: &dyn Scannable) -> &mut Self {
+    self.sig_with_offset_and_scanner(scanner, name, scannable, |l| l)
+  }
+
+  #[inline]
+  pub fn sig_with_offset_and_scanner(&mut self, scanner: &str, name: &str, scannable: &dyn Scannable, offset_fn: fn(MemoryLocation) -> MemoryLocation) -> &mut Self {
     self
   }
 

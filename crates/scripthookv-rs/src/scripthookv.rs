@@ -19,7 +19,12 @@ pub struct ScriptHookV {
 
 impl ScriptHookV {
   fn init(&mut self) {
-    debug!("Checking game version {:?} (min: {:?}) (max: {:?})", get_game_version(), self.min_version, self.max_version);
+    debug!(
+      "Checking game version {:?} (min: {:?}) (max: {:?})",
+      get_game_version(),
+      self.min_version,
+      self.max_version
+    );
     match (get_game_version(), self.min_version, self.max_version) {
       (Some(version), Some(min_version), _) if version < min_version => {
         panic!("Game version is too old")
