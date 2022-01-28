@@ -1,7 +1,5 @@
 use super::MemoryRestorer;
-use std::mem::size_of;
-use std::sync::{Arc, Mutex};
-use std::{iter::Iterator, ptr};
+use std::{sync::{Arc, Mutex}, iter::Iterator, ptr, mem::size_of, fmt};
 
 #[derive(Clone, Debug)]
 pub struct MemoryLocation {
@@ -121,5 +119,11 @@ impl MemoryLocation {
       self.write(0x3C);
     }
     self
+  }
+}
+
+impl fmt::Display for MemoryLocation {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "0x{:0<16X}", self.location)
   }
 }

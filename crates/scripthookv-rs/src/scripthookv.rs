@@ -1,25 +1,25 @@
-use log::debug;
+use log::{info, warn};
 use shv_bindings::{KeyboardHandler, PresentCallback};
 
 use crate::{
   get_game_version, register_additional_script_thread, register_keyboard_handler,
   register_present_callback, register_script, remove_keyboard_handler, remove_present_callback,
-  remove_script, GameVersion, ModuleHandle, ScriptFn
+  remove_script, sig_info::SigInfo, GameVersion, ModuleHandle, ScriptFn, memory::ModuleMemoryScanner, memory_database::MemoryDatabase
 };
 
-#[derive(Debug)]
 pub struct ScriptHookV {
   module:            ModuleHandle,
   scripts:           Vec<ScriptFn>,
   present_callbacks: Vec<PresentCallback>,
   keyboard_handlers: Vec<KeyboardHandler>,
   min_version:       Option<GameVersion>,
-  max_version:       Option<GameVersion>
+  max_version:       Option<GameVersion>,
+  memory: MemoryDatabase
 }
 
 impl ScriptHookV {
-  fn init(&mut self) {
-    debug!(
+  fn init(&mut self, sigs: &Vec<SigInfo>) {
+    info!(
       "Checking game version {:?} (min: {:?}) (max: {:?})",
       get_game_version(),
       self.min_version,
@@ -36,7 +36,18 @@ impl ScriptHookV {
       _ => ()
     }
 
-    debug!("Registering {} scripts", self.scripts.len());
+    info!("Searching for {} signatures", sigs.len());
+    let scanner = ModuleMemoryScanner::default();
+    for sig in sigs {
+      if let Ok(location) = sig.run(&scanner) {
+        info!("Signature for {} resolved to {location}", sig.name);
+        self.memory.add(sig.name.clone(), location);
+      } else {
+        warn!("Failed to find signature for {}", sig.name);
+      }
+    }
+
+    info!("Registering {} scripts", self.scripts.len());
     for (i, script) in self.scripts.iter().enumerate() {
       if i == 0 {
         register_script(self.module, *script);
@@ -45,12 +56,12 @@ impl ScriptHookV {
       }
     }
 
-    debug!("Registering {} present callbacks", self.scripts.len());
+    info!("Registering {} present callbacks", self.scripts.len());
     for callback in &self.present_callbacks {
       register_present_callback(*callback);
     }
 
-    debug!("Registering {} keyboard handlers", self.scripts.len());
+    info!("Registering {} keyboard handlers", self.scripts.len());
     for handler in &self.keyboard_handlers {
       register_keyboard_handler(*handler);
     }
@@ -62,6 +73,7 @@ impl ScriptHookV {
     scripts: Vec<ScriptFn>,
     present_callbacks: Vec<PresentCallback>,
     keyboard_handlers: Vec<KeyboardHandler>,
+    sigs: &Vec<SigInfo>,
     min_version: Option<GameVersion>,
     max_version: Option<GameVersion>
   ) -> Self {
@@ -71,9 +83,10 @@ impl ScriptHookV {
       present_callbacks,
       keyboard_handlers,
       min_version,
-      max_version
+      max_version,
+      memory: MemoryDatabase::default()
     };
-    instance.init();
+    instance.init(sigs);
     instance
   }
 
@@ -87,6 +100,10 @@ impl ScriptHookV {
     for handler in &self.keyboard_handlers {
       remove_keyboard_handler(*handler);
     }
+  }
+
+  pub fn get_memory(&self) -> &MemoryDatabase {
+    &self.memory
   }
 }
 
