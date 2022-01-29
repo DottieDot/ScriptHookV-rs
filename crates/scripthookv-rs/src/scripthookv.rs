@@ -2,9 +2,10 @@ use log::{info, warn};
 use shv_bindings::{KeyboardHandler, PresentCallback};
 
 use crate::{
-  get_game_version, register_additional_script_thread, register_keyboard_handler,
-  register_present_callback, register_script, remove_keyboard_handler, remove_present_callback,
-  remove_script, sig_info::SigInfo, GameVersion, ModuleHandle, ScriptFn, memory::ModuleMemoryScanner, memory_database::MemoryDatabase
+  get_game_version, memory::ModuleMemoryScanner, memory_database::MemoryDatabase,
+  register_additional_script_thread, register_keyboard_handler, register_present_callback,
+  register_script, remove_keyboard_handler, remove_present_callback, remove_script,
+  sig_info::SigInfo, GameVersion, ModuleHandle, ScriptFn
 };
 
 pub struct ScriptHookV {
@@ -14,7 +15,7 @@ pub struct ScriptHookV {
   keyboard_handlers: Vec<KeyboardHandler>,
   min_version:       Option<GameVersion>,
   max_version:       Option<GameVersion>,
-  memory: MemoryDatabase
+  memory:            MemoryDatabase
 }
 
 impl ScriptHookV {

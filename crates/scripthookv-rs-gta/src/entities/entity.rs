@@ -1,4 +1,8 @@
-use scripthookv::types::{Entity as NativeEntity, Vector3};
+use crate::five::game_script_handler;
+use scripthookv::{
+  memory::MemoryLocation,
+  types::{Entity as NativeEntity, Vector3}
+};
 
 use crate::natives::*;
 
@@ -8,6 +12,11 @@ pub trait Entity {
   /// Gets the underlying entity handle.
   #[must_use]
   fn handle(&self) -> NativeEntity;
+
+  /// Gets the address of the entity in memory
+  fn get_entity_address(&self) -> Option<MemoryLocation> {
+    game_script_handler::get_script_entity_safe(self.handle())
+  }
 
   /// Checks if the entity exists.
   #[inline]
@@ -282,12 +291,6 @@ pub trait Entity {
     unsafe { entity::set_entity_visible(self.handle(), visible, false) }
   }
 
-  /// Makes the entity invincible.
-  #[inline]
-  fn set_invincible(&self, invincible: bool) {
-    unsafe { entity::set_entity_invincible(self.handle(), invincible) }
-  }
-
   /// Checks if collisions are enabled for the entity.
   #[inline]
   #[must_use]
@@ -305,5 +308,115 @@ pub trait Entity {
   #[must_use]
   fn bones(&self) -> EntityBones {
     EntityBones::new(self.handle())
+  }
+
+  #[inline]
+  #[must_use]
+  fn is_fire_proof(&self) -> bool {
+    unsafe {
+      self
+        .get_entity_address()
+        .map_or(false, |l| l.add(0x188).is_bit_set(5))
+    }
+  }
+
+  #[inline]
+  fn set_fire_proof(&self, toggle: bool) {
+    unsafe {
+      self
+        .get_entity_address()
+        .map(|l| l.add(0x188).set_bit_to(5, toggle));
+    }
+  }
+
+  #[inline]
+  #[must_use]
+  fn is_melee_proof(&self) -> bool {
+    unsafe {
+      self
+        .get_entity_address()
+        .map_or(false, |l| l.add(0x188).is_bit_set(7))
+    }
+  }
+
+  #[inline]
+  fn set_melee_proof(&self, toggle: bool) {
+    unsafe {
+      self
+        .get_entity_address()
+        .map(|l| l.add(0x188).set_bit_to(7, toggle));
+    }
+  }
+
+  #[inline]
+  #[must_use]
+  fn is_bullet_proof(&self) -> bool {
+    unsafe {
+      self
+        .get_entity_address()
+        .map_or(false, |l| l.add(0x188).is_bit_set(4))
+    }
+  }
+
+  #[inline]
+  fn set_bullet_proof(&self, toggle: bool) {
+    unsafe {
+      self
+        .get_entity_address()
+        .map(|l| l.add(0x188).set_bit_to(4, toggle));
+    }
+  }
+
+  #[inline]
+  #[must_use]
+  fn is_explosion_proof(&self) -> bool {
+    unsafe {
+      self
+        .get_entity_address()
+        .map_or(false, |l| l.add(0x188).is_bit_set(11))
+    }
+  }
+
+  #[inline]
+  fn set_explosion_proof(&self, toggle: bool) {
+    unsafe {
+      self
+        .get_entity_address()
+        .map(|l| l.add(0x188).set_bit_to(11, toggle));
+    }
+  }
+
+  #[inline]
+  #[must_use]
+  fn is_collision_proof(&self) -> bool {
+    unsafe {
+      self
+        .get_entity_address()
+        .map_or(false, |l| l.add(0x188).is_bit_set(6))
+    }
+  }
+
+  #[inline]
+  fn set_collision_proof(&self, toggle: bool) {
+    unsafe {
+      self
+        .get_entity_address()
+        .map(|l| l.add(0x188).set_bit_to(6, toggle));
+    }
+  }
+
+  #[inline]
+  #[must_use]
+  fn is_invincible(&self) -> bool {
+    unsafe {
+      self
+        .get_entity_address()
+        .map_or(false, |l| l.add(0x188).is_bit_set(8))
+    }
+  }
+
+  #[inline]
+  fn set_invincible(&self, toggle: bool) {
+    unsafe { entity::set_entity_invincible(self.handle(), toggle) }
   }
 }

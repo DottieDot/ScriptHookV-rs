@@ -1,5 +1,12 @@
 use super::MemoryRestorer;
-use std::{sync::{Arc, Mutex}, iter::Iterator, ptr, mem::size_of, fmt};
+use std::{
+  fmt,
+  iter::Iterator,
+  mem::size_of,
+  ops::{BitAnd, BitAndAssign, BitOrAssign},
+  ptr,
+  sync::{Arc, Mutex}
+};
 
 #[derive(Clone, Debug)]
 pub struct MemoryLocation {
@@ -47,7 +54,7 @@ impl MemoryLocation {
     if offset >= 0 {
       self.add(offset as usize)
     } else {
-      self.sub(offset as usize)
+      self.sub(-offset as usize)
     }
   }
 
@@ -57,6 +64,26 @@ impl MemoryLocation {
 
   pub unsafe fn cast<T>(&self) -> T {
     ptr::read::<T>(&self.location as *const usize as *mut T)
+  }
+
+  pub unsafe fn is_bit_set(&self, bit: u8) -> bool {
+    self.get::<u64>().bitand(1 << bit) == 1
+  }
+
+  pub unsafe fn set_bit(&self, bit: u8) {
+    (*self.cast::<*mut u64>()).bitor_assign(1 << bit);
+  }
+
+  pub unsafe fn clear_bit(&self, bit: u8) {
+    (*self.cast::<*mut u64>()).bitand_assign(!self.get::<u64>().bitand(1 << bit));
+  }
+
+  pub unsafe fn set_bit_to(&self, bit: u8, toggle: bool) {
+    if toggle {
+      self.set_bit(bit);
+    } else {
+      self.clear_bit(bit);
+    }
   }
 
   pub unsafe fn rip(&self, length: i8) -> Self {
@@ -124,6 +151,6 @@ impl MemoryLocation {
 
 impl fmt::Display for MemoryLocation {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "0x{:0<16X}", self.location)
+    write!(f, "0x{:0>16X}", self.location)
   }
 }

@@ -1,7 +1,12 @@
 use log::info;
 use shv_bindings::{KeyboardHandler, PresentCallback};
 
-use crate::{builder_plugin::BuilderPlugin, GameVersion, ModuleHandle, ScriptHookV, memory::{Scannable, MemoryLocation}, sig_info::SigInfo};
+use crate::{
+  builder_plugin::BuilderPlugin,
+  memory::{MemoryLocation, Scannable},
+  sig_info::SigInfo,
+  GameVersion, ModuleHandle, ScriptHookV
+};
 
 pub type ScriptFn = extern "C" fn();
 
@@ -63,32 +68,39 @@ impl ScriptHookVBuilder {
   }
 
   #[inline]
-  pub fn plugin(&mut self, mut plugin: Box<dyn BuilderPlugin>) -> &mut Self {
+  pub fn plugin(&mut self, mut plugin: impl BuilderPlugin + 'static) -> &mut Self {
     info!("registered builder plugin {}", plugin.name());
     plugin.build(self);
-    self.plugins.push(plugin);
+    self.plugins.push(Box::new(plugin));
     self
   }
 
   #[inline]
-  pub fn sig(&mut self, name: String, scannable: Box<dyn Scannable>) -> &mut Self {
+  pub fn sig(&mut self, name: String, scannable: impl Scannable + 'static) -> &mut Self {
     self.sig_with_offset(name, scannable, |l| l)
   }
 
   #[inline]
-  pub fn sig_with_offset(&mut self, name: String, scannable: Box<dyn Scannable>, offset: fn(MemoryLocation) -> MemoryLocation) -> &mut Self {
-    self.sigs.push(SigInfo::new(name, scannable, offset));
+  pub fn sig_with_offset(
+    &mut self,
+    name: String,
+    scannable: impl Scannable + 'static,
+    offset: fn(MemoryLocation) -> MemoryLocation
+  ) -> &mut Self {
+    self
+      .sigs
+      .push(SigInfo::new(name, Box::new(scannable), offset));
     self
   }
 
   #[inline]
   #[must_use]
-  pub fn build(mut self) -> ScriptHookV {
+  pub fn build(&mut self) -> ScriptHookV {
     let instance = ScriptHookV::new(
       self.module,
-      self.scripts,
-      self.present_callbacks,
-      self.keyboard_handlers,
+      self.scripts.clone(),
+      self.present_callbacks.clone(),
+      self.keyboard_handlers.clone(),
       &self.sigs,
       self.min_version,
       self.max_version

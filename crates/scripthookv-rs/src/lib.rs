@@ -5,30 +5,31 @@ use shv_bindings::getGlobalPtr;
 pub extern crate shv_bindings;
 
 pub mod call_native;
+pub mod memory;
 pub mod natives;
 pub mod types;
-pub mod memory;
 
 mod builder_plugin;
 mod callbacks;
 mod game_version;
+mod memory_database;
 mod script;
 mod scripthookv;
 mod scripthookv_builder;
-mod texture;
-mod world;
-mod winapi;
 mod sig_info;
-mod memory_database;
+mod texture;
+mod winapi;
+mod world;
 
+pub use builder_plugin::*;
 pub(crate) use callbacks::*;
 pub use game_version::*;
+pub use memory_database::*;
 pub use script::*;
 pub use scripthookv::*;
 pub use scripthookv_builder::*;
 pub use texture::*;
 pub use world::*;
-pub use memory_database::*;
 
 pub use scripthookv_rs_macros::*;
 
