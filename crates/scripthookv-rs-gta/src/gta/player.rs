@@ -1,6 +1,7 @@
 use std::fmt;
 
-use crate::{entities::Ped, natives::*};
+use super::entities::Ped;
+use crate::natives::*;
 
 pub struct Player {
   handle: i32

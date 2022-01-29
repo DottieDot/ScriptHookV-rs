@@ -1,11 +1,14 @@
 use std::ffi::CString;
 use std::time::Duration;
 
-use crate::{natives::*, Model};
+use crate::natives::*;
 use scripthookv::types::{Bool, Vector3, Vehicle as NativeVehicle};
 use scripthookv::{get_game_version, GameVersion};
 
-use crate::entities::{Entity, VehicleDoors};
+use crate::gta::{
+  entities::{Entity, VehicleDoors},
+  Model
+};
 
 use super::{VehicleClass, VehicleColorManager, VehicleModManager, VehicleWheels};
 

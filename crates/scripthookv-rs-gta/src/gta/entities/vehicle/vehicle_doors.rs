@@ -1,8 +1,5 @@
-use crate::entities::{VehicleDoor, VehicleDoorIndex, VehicleDoorIndexIter};
-use crate::{
-  entities::{Entity, Vehicle},
-  natives::*
-};
+use super::{Vehicle, VehicleDoor, VehicleDoorIndex, VehicleDoorIndexIter};
+use crate::{gta::entities::Entity, natives::*};
 
 use strum::IntoEnumIterator;
 

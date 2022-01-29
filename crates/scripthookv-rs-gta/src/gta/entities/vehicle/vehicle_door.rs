@@ -1,7 +1,5 @@
-use crate::{
-  entities::{Vehicle, VehicleDoorIndex},
-  natives::*
-};
+use super::{Vehicle, VehicleDoorIndex};
+use crate::natives::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct VehicleDoor {

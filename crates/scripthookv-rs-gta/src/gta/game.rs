@@ -1,7 +1,8 @@
 use joaat;
 use scripthookv::types::Hash;
 
-use crate::{entities::Ped, natives::*, Player};
+use super::{entities::Ped, Player};
+use crate::natives::*;
 
 pub fn generate_hash(string: &str) -> Hash {
   joaat::hash_ascii_lowercase(string.as_bytes())

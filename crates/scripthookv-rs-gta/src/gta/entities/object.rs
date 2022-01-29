@@ -1,7 +1,6 @@
-use crate::{natives::*, Model};
-use scripthookv::types::{Object as NativeObject, Vector3};
-
 use super::Entity;
+use crate::{gta::Model, natives::*};
+use scripthookv::types::{Object as NativeObject, Vector3};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Object {
