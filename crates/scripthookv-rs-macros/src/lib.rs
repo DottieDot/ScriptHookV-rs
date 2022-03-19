@@ -9,7 +9,23 @@ pub fn shv_entrypoint(_metadata: TokenStream, item: TokenStream) -> TokenStream 
   let expanded = quote! {
     #entrypoint
 
-    static SCRIPTHOOKV: once_cell::sync::OnceCell<scripthookv::ScriptHookV> = once_cell::sync::OnceCell::new();
+    static SCRIPTHOOKV: ::once_cell::sync::OnceCell<::std::sync::Mutex<scripthookv::ScriptHookV>> = ::once_cell::sync::OnceCell::new();
+
+    extern "C" fn __shv_script_entrypoint() {
+      loop {
+        {
+          let mut shv = SCRIPTHOOKV
+            .get()
+            .expect("ScriptHookv is not initialized")
+            .lock()
+            .unwrap();
+          shv.update_scripts();
+        }
+        unsafe {
+          ::scripthookv::shv_bindings::scriptWait(0);
+        }
+      }
+    }
 
     #[no_mangle]
     #[allow(non_snake_case)]
@@ -21,13 +37,16 @@ pub fn shv_entrypoint(_metadata: TokenStream, item: TokenStream) -> TokenStream 
       match reason {
         1 /* DLL_PROCESS_ATTACH */ => {
           SCRIPTHOOKV.get_or_init(|| {
-            entrypoint(instance)
+            ::std::sync::Mutex::new(entrypoint(instance))
           });
+          unsafe {
+            ::scripthookv::shv_bindings::scriptRegister(instance, __shv_script_entrypoint);
+          }
           1
         }
         0 /* DLL_PROCESS_DETACH */ => {
           if let Some(shv) = &SCRIPTHOOKV.get() {
-            shv.cleanup();
+            shv.lock().unwrap().cleanup();
           }
           1
         },

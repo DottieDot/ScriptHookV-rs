@@ -3,23 +3,23 @@ use shv_bindings::{KeyboardHandler, PresentCallback};
 
 use crate::{
   get_game_version, memory::ModuleMemoryScanner, memory_database::MemoryDatabase,
-  register_additional_script_thread, register_keyboard_handler, register_present_callback,
-  register_script, remove_keyboard_handler, remove_present_callback, remove_script,
-  sig_info::SigInfo, GameVersion, ModuleHandle, ScriptFn
+  register_keyboard_handler, register_present_callback, remove_keyboard_handler,
+  remove_present_callback, remove_script, scripting::{Script, ScriptManager}, sig_info::SigInfo, GameVersion,
+  ModuleHandle,
 };
 
-pub struct ScriptHookV {
-  module:            ModuleHandle,
-  scripts:           Vec<ScriptFn>,
+pub struct ScriptHookV<'a> {
+  module: ModuleHandle,
   present_callbacks: Vec<PresentCallback>,
   keyboard_handlers: Vec<KeyboardHandler>,
-  min_version:       Option<GameVersion>,
-  max_version:       Option<GameVersion>,
-  memory:            MemoryDatabase
+  min_version: Option<GameVersion>,
+  max_version: Option<GameVersion>,
+  memory: MemoryDatabase,
+  script_engine: ScriptManager<'a>
 }
 
-impl ScriptHookV {
-  fn init(&mut self, sigs: &Vec<SigInfo>) {
+impl<'a> ScriptHookV<'a> {
+  fn init(&mut self, sigs: &Vec<SigInfo>, scripts: Vec<Box<dyn Script>>) {
     info!(
       "Checking game version {:?} (min: {:?}) (max: {:?})",
       get_game_version(),
@@ -34,7 +34,7 @@ impl ScriptHookV {
         panic!("Game version is not supported")
       }
       (None, _, Some(_)) | (None, Some(_), _) => panic!("Unknown game version"),
-      _ => ()
+      _ => (),
     }
 
     info!("Searching for {} signatures", sigs.len());
@@ -48,21 +48,17 @@ impl ScriptHookV {
       }
     }
 
-    info!("Registering {} scripts", self.scripts.len());
-    for (i, script) in self.scripts.iter().enumerate() {
-      if i == 0 {
-        register_script(self.module, *script);
-      } else {
-        register_additional_script_thread(self.module, *script);
-      }
+    info!("Registering {} scripts", scripts.len());
+    for script in scripts {
+      self.script_engine.add_script(script);
     }
 
-    info!("Registering {} present callbacks", self.scripts.len());
+    info!("Registering {} present callbacks", self.present_callbacks.len());
     for callback in &self.present_callbacks {
       register_present_callback(*callback);
     }
 
-    info!("Registering {} keyboard handlers", self.scripts.len());
+    info!("Registering {} keyboard handlers", self.keyboard_handlers.len());
     for handler in &self.keyboard_handlers {
       register_keyboard_handler(*handler);
     }
@@ -71,23 +67,23 @@ impl ScriptHookV {
   #[must_use]
   pub(crate) fn new(
     module: ModuleHandle,
-    scripts: Vec<ScriptFn>,
+    scripts: Vec<Box<dyn Script>>,
     present_callbacks: Vec<PresentCallback>,
     keyboard_handlers: Vec<KeyboardHandler>,
     sigs: &Vec<SigInfo>,
     min_version: Option<GameVersion>,
-    max_version: Option<GameVersion>
+    max_version: Option<GameVersion>,
   ) -> Self {
     let mut instance = Self {
       module,
-      scripts,
       present_callbacks,
       keyboard_handlers,
       min_version,
       max_version,
-      memory: MemoryDatabase::default()
+      memory: MemoryDatabase::default(),
+      script_engine: Default::default()
     };
-    instance.init(sigs);
+    instance.init(sigs, scripts);
     instance
   }
 
@@ -106,8 +102,12 @@ impl ScriptHookV {
   pub fn get_memory(&self) -> &MemoryDatabase {
     &self.memory
   }
+
+  pub fn update_scripts(&mut self) {
+    self.script_engine.tick();
+  }
 }
 
-unsafe impl Send for ScriptHookV {}
+unsafe impl<'a> Send for ScriptHookV<'a> {}
 
-unsafe impl Sync for ScriptHookV {}
+unsafe impl<'a> Sync for ScriptHookV<'a> {}

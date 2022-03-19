@@ -5,14 +5,14 @@ use crate::{
   builder_plugin::BuilderPlugin,
   memory::{MemoryLocation, Scannable},
   sig_info::SigInfo,
-  GameVersion, ModuleHandle, ScriptHookV
+  GameVersion, ModuleHandle, ScriptHookV, scripting::Script
 };
 
 pub type ScriptFn = extern "C" fn();
 
 pub struct ScriptHookVBuilder {
   module:            ModuleHandle,
-  scripts:           Vec<ScriptFn>,
+  scripts:           Vec<Box<dyn Script>>,
   present_callbacks: Vec<PresentCallback>,
   keyboard_handlers: Vec<KeyboardHandler>,
   min_version:       Option<GameVersion>,
@@ -38,55 +38,55 @@ impl ScriptHookVBuilder {
   }
 
   #[inline]
-  pub fn min_version(&mut self, version: GameVersion) -> &mut Self {
+  pub fn min_version(mut self, version: GameVersion) -> Self {
     self.min_version = Some(version);
     self
   }
 
   #[inline]
-  pub fn max_version(&mut self, version: GameVersion) -> &mut Self {
+  pub fn max_version(mut self, version: GameVersion) -> Self {
     self.max_version = Some(version);
     self
   }
 
   #[inline]
-  pub fn script(&mut self, entrypoint: ScriptFn) -> &mut Self {
-    self.scripts.push(entrypoint);
+  pub fn script(mut self, script: impl Script + 'static) -> Self {
+    self.scripts.push(Box::new(script));
     self
   }
 
   #[inline]
-  pub fn present_callback(&mut self, callback: PresentCallback) -> &mut Self {
+  pub fn present_callback(mut self, callback: PresentCallback) -> Self {
     self.present_callbacks.push(callback);
     self
   }
 
   #[inline]
-  pub fn keyboard_handler(&mut self, handler: KeyboardHandler) -> &mut Self {
+  pub fn keyboard_handler(mut self, handler: KeyboardHandler) -> Self {
     self.keyboard_handlers.push(handler);
     self
   }
 
   #[inline]
-  pub fn plugin(&mut self, mut plugin: impl BuilderPlugin + 'static) -> &mut Self {
+  pub fn plugin(mut self, mut plugin: impl BuilderPlugin + 'static) -> Self {
     info!("registered builder plugin {}", plugin.name());
-    plugin.build(self);
+    self = plugin.build(self);
     self.plugins.push(Box::new(plugin));
     self
   }
 
   #[inline]
-  pub fn sig(&mut self, name: String, scannable: impl Scannable + 'static) -> &mut Self {
+  pub fn sig(self, name: String, scannable: impl Scannable + 'static) -> Self {
     self.sig_with_offset(name, scannable, |l| l)
   }
 
   #[inline]
   pub fn sig_with_offset(
-    &mut self,
+    mut self,
     name: String,
     scannable: impl Scannable + 'static,
     offset: fn(MemoryLocation) -> MemoryLocation
-  ) -> &mut Self {
+  ) -> Self {
     self
       .sigs
       .push(SigInfo::new(name, Box::new(scannable), offset));
@@ -95,12 +95,12 @@ impl ScriptHookVBuilder {
 
   #[inline]
   #[must_use]
-  pub fn build(&mut self) -> ScriptHookV {
+  pub fn build<'a>(mut self) -> ScriptHookV<'a> {
     let instance = ScriptHookV::new(
       self.module,
-      self.scripts.clone(),
-      self.present_callbacks.clone(),
-      self.keyboard_handlers.clone(),
+      self.scripts,
+      self.present_callbacks,
+      self.keyboard_handlers,
       &self.sigs,
       self.min_version,
       self.max_version

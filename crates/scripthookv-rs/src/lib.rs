@@ -26,7 +26,7 @@ pub use builder_plugin::*;
 pub(crate) use callbacks::*;
 pub use game_version::*;
 pub use memory_database::*;
-pub use script::*;
+pub(crate) use script::*;
 pub use scripthookv::*;
 pub use scripthookv_builder::*;
 pub use texture::*;

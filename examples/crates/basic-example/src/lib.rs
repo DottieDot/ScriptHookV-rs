@@ -1,8 +1,7 @@
 use async_trait::async_trait;
 use log::{LevelFilter, Metadata, Record};
 use scripthookv::{
-  script_yield,
-  scripting::{Script, ScriptRuntime},
+  scripting::{Script},
   shv_entrypoint, ModuleHandle, ScriptHookV, ScriptHookVBuilder,
 };
 use scripthookv_gta::{
@@ -22,7 +21,7 @@ use winapi::um::{
 mod natives;
 use natives::*;
 
-struct MyScript {}
+struct MyScript;
 
 #[async_trait]
 impl Script for MyScript {
@@ -65,20 +64,10 @@ impl log::Log for SimpleLogger {
   fn flush(&self) {}
 }
 
-extern "C" fn script_main() {
-  let mut script_runtime = ScriptRuntime::new(MyScript {});
-
-  script_runtime.start();
-  loop {
-    script_runtime.tick();
-    script_yield();
-  }
-}
-
 static LOGGER: SimpleLogger = SimpleLogger;
 
 #[shv_entrypoint]
-fn entrypoint(module: ModuleHandle) -> ScriptHookV {
+fn entrypoint(module: ModuleHandle) -> ScriptHookV<'static> {
   unsafe {
     AllocConsole();
     ShowWindow(GetConsoleWindow(), SW_SHOW);
@@ -90,6 +79,6 @@ fn entrypoint(module: ModuleHandle) -> ScriptHookV {
 
   ScriptHookVBuilder::new(module)
     .plugin(ScriptHookVGtaPlugin)
-    .script(script_main)
+    .script(MyScript)
     .build()
 }

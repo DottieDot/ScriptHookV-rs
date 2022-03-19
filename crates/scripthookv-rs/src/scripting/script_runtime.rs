@@ -1,33 +1,51 @@
 use std::{
-  sync::{Arc, Mutex},
+  sync::{Arc, Mutex, RwLock},
   task::Poll,
 };
 
-use super::{Script, ScriptFuture, ScriptStatus, ScriptInfo};
+use super::{Script, ScriptFuture, ScriptStatus};
 use smol::LocalExecutor;
 
 pub struct ScriptRuntime<'a> {
-  script_info: Arc<Mutex<ScriptInfo>>,
   executor: LocalExecutor<'a>,
+  script: Arc<Mutex<Box<dyn Script>>>,
+  status: Arc<RwLock<ScriptStatus>>,
 }
 
 impl<'a> ScriptRuntime<'a> {
-  pub fn new(script: impl Script + 'static) -> Self {
+  pub fn new(script: Box<dyn Script>) -> Self {
     Self {
       executor: LocalExecutor::new(),
-      script_info: Arc::new(Mutex::new(ScriptInfo {
-        script: Box::new(script),
-        status: ScriptStatus::Pending,
-      })),
+      script: Arc::new(Mutex::new(script)),
+      status: Arc::new(RwLock::new(ScriptStatus::Pending))
     }
   }
 
   pub fn start(&self) {
-    let script_info = self.script_info.clone();
+    let script = self.script.clone();
+    let status = self.status.clone();
+
     self
       .executor
       .spawn(async move {
-        script_info.lock().unwrap().start().await;
+        let mut locked_script = script.lock().unwrap();
+
+        *status.write().unwrap() = ScriptStatus::Starting;
+        locked_script.start().await;
+    
+        if *status.read().unwrap() == ScriptStatus::Starting {
+          *status.write().unwrap() = ScriptStatus::Running;
+          while *status.read().unwrap() == ScriptStatus::Running {
+            locked_script.update().await;
+            yield_async().await;
+          }
+        }
+    
+        if *status.read().unwrap() == ScriptStatus::Stopping {
+          locked_script.cleanup().await;
+        }
+    
+        *status.write().unwrap() = ScriptStatus::Terminated;
       })
       .detach();
   }
@@ -37,7 +55,11 @@ impl<'a> ScriptRuntime<'a> {
   }
 
   pub fn stop(&mut self) {
-    self.script_info.lock().unwrap().stop();
+    *self.status.write().unwrap() = ScriptStatus::Stopping;
+  }
+
+  pub fn status(&self) -> ScriptStatus {
+    *self.status.read().unwrap()
   }
 }
 
