@@ -1,6 +1,9 @@
-use std::time::{Duration, Instant};
+use std::{
+  task::Poll,
+  time::{Duration, Instant},
+};
 
-use scripthookv::{script_yield, types::Hash};
+use scripthookv::{scripting::ScriptFuture, types::Hash};
 
 use super::game::generate_hash;
 use crate::natives::*;
@@ -8,7 +11,7 @@ use crate::natives::*;
 #[must_use]
 #[derive(Debug, Clone, Copy)]
 pub struct Model {
-  hash: Hash
+  hash: Hash,
 }
 
 impl Model {
@@ -32,18 +35,24 @@ impl Model {
     unsafe { streaming::has_model_loaded(self.hash) }
   }
 
-  /// Yields the script until the model is loaded.
-  pub fn load(&self, timeout: Duration) -> Result<(), ()> {
+  pub async fn load_with_timeout_async(&self, timeout: Duration) -> Result<(), ()> {
     let stop_at = Instant::now() + timeout;
 
     self.request();
-    while !self.loaded() {
+    ScriptFuture::new(move || {
       if Instant::now() >= stop_at {
-        return Err(());
+        Poll::Ready(Err(()))
+      } else if !self.loaded() {
+        Poll::Pending
+      } else {
+        Poll::Ready(Ok(()))
       }
-      script_yield()
-    }
-    Ok(())
+    })
+    .await
+  }
+
+  pub async fn load_async(&self) -> Result<(), ()> {
+    self.load_with_timeout_async(Duration::from_secs(1)).await
   }
 
   /// Checks if the model is a vehicle.
@@ -69,7 +78,7 @@ impl std::fmt::Display for Model {
 
 #[derive(Debug)]
 pub struct InvalidModelError {
-  hash: Hash
+  hash: Hash,
 }
 
 impl std::fmt::Display for InvalidModelError {

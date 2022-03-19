@@ -1,15 +1,54 @@
-use log::{Metadata, Record, LevelFilter};
-use scripthookv::{script_yield, shv_entrypoint, ModuleHandle, ScriptHookV, ScriptHookVBuilder};
+use async_trait::async_trait;
+use log::{LevelFilter, Metadata, Record};
+use scripthookv::{
+  script_yield,
+  scripting::{Script, ScriptRuntime},
+  shv_entrypoint, ModuleHandle, ScriptHookV, ScriptHookVBuilder,
+};
 use scripthookv_gta::{
-  entities::{Entity, Vehicle},
-  ScriptHookVGtaPlugin
+  gta::{
+    entities::{Entity, Vehicle},
+    Model,
+  },
+  ScriptHookVGtaPlugin,
 };
 use std::ffi::CString;
-use winapi::um::{consoleapi::AllocConsole, winuser::{ShowWindow, SW_SHOW}, wincon::GetConsoleWindow};
+use winapi::um::{
+  consoleapi::AllocConsole,
+  wincon::GetConsoleWindow,
+  winuser::{ShowWindow, SW_SHOW},
+};
 
 mod natives;
 use natives::*;
 
+struct MyScript {}
+
+#[async_trait]
+impl Script for MyScript {
+  async fn start(&mut self) {}
+
+  async fn update(&mut self) {
+    unsafe {
+      let test = CString::new("test").unwrap();
+      let test_hash = misc::get_hash_key(test.as_ptr());
+
+      if misc::_has_cheat_string_just_been_entered(test_hash) != 0 {
+        let player_ped = player::player_ped_id();
+        let coords = entity::get_entity_coords(player_ped, 1);
+        let heading = entity::get_entity_heading(player_ped);
+        let adder = Model::try_from("adder").unwrap();
+
+        adder.load_async().await.unwrap();
+
+        let vehicle = Vehicle::create(adder, coords, heading).unwrap();
+        vehicle.set_explosion_proof(true);
+      }
+    }
+  }
+
+  async fn cleanup(&mut self) {}
+}
 struct SimpleLogger;
 
 impl log::Log for SimpleLogger {
@@ -27,29 +66,12 @@ impl log::Log for SimpleLogger {
 }
 
 extern "C" fn script_main() {
-  unsafe {
-    let test = CString::new("test").unwrap();
-    let adder = CString::new("adder").unwrap();
-    let test_hash = misc::get_hash_key(test.as_ptr());
-    let adder_hash = misc::get_hash_key(adder.as_ptr());
+  let mut script_runtime = ScriptRuntime::new(MyScript {});
 
-    loop {
-      if misc::_has_cheat_string_just_been_entered(test_hash) != 0 {
-        let player_ped = player::player_ped_id();
-        let coords = entity::get_entity_coords(player_ped, 1);
-        let heading = entity::get_entity_heading(player_ped);
-
-        streaming::request_model(adder_hash);
-        while streaming::has_model_loaded(adder_hash) == 0 {
-          script_yield();
-        }
-
-        let vehicle = Vehicle::create(adder_hash.try_into().unwrap(), coords, heading).unwrap();
-        vehicle.set_explosion_proof(true);
-      }
-
-      script_yield();
-    }
+  script_runtime.start();
+  loop {
+    script_runtime.tick();
+    script_yield();
   }
 }
 

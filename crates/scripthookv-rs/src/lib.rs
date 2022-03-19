@@ -20,6 +20,7 @@ mod sig_info;
 mod texture;
 mod winapi;
 mod world;
+pub mod scripting;
 
 pub use builder_plugin::*;
 pub(crate) use callbacks::*;
