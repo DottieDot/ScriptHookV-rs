@@ -30,27 +30,32 @@ impl<'a> ScriptRuntime<'a> {
       .spawn(async move {
         let mut locked_script = script.lock().unwrap();
 
-        *status.write().unwrap() = ScriptStatus::Starting;
-        locked_script.start().await;
+        loop {
+          if locked_script.should_stop() {
+            *status.write().unwrap() = ScriptStatus::Stopping;
+          }
 
-        if *status.read().unwrap() == ScriptStatus::Starting {
-          *status.write().unwrap() = ScriptStatus::Running;
-          while *status.read().unwrap() == ScriptStatus::Running {
-            locked_script.update().await;
-
-            if locked_script.should_stop() {
-              *status.write().unwrap() = ScriptStatus::Stopping;
-            } else {
+          match *status.read().unwrap() {
+            ScriptStatus::Pending => {
+              *status.write().unwrap() = ScriptStatus::Starting;
+              locked_script.start().await;
+            }
+            ScriptStatus::Starting => {
+              *status.write().unwrap() = ScriptStatus::Running;
+            }
+            ScriptStatus::Running => {
+              locked_script.update().await;
               yield_async().await;
+            }
+            ScriptStatus::Stopping => {
+              locked_script.cleanup().await;
+              *status.write().unwrap() = ScriptStatus::Terminated;
+            }
+            ScriptStatus::Terminated => {
+              break;
             }
           }
         }
-
-        if *status.read().unwrap() == ScriptStatus::Stopping {
-          locked_script.cleanup().await;
-        }
-
-        *status.write().unwrap() = ScriptStatus::Terminated;
       })
       .detach();
   }
