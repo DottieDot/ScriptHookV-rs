@@ -1,29 +1,33 @@
 use std::{
   sync::{Arc, Mutex, RwLock},
-  task::Poll
+  task::Poll,
+  time::{Duration, Instant}
 };
 
-use super::{Script, ScriptFuture, ScriptStatus};
+use super::{Script, ScriptCommands, ScriptFuture, ScriptManagerDelegate, ScriptStatus};
 use smol::LocalExecutor;
 
 pub struct ScriptRuntime<'a> {
-  executor: LocalExecutor<'a>,
-  script:   Arc<Mutex<Box<dyn Script>>>,
-  status:   Arc<RwLock<ScriptStatus>>
+  executor:       LocalExecutor<'a>,
+  script:         Arc<Mutex<Box<dyn Script>>>,
+  status:         Arc<RwLock<ScriptStatus>>,
+  script_manager: ScriptManagerDelegate
 }
 
 impl<'a> ScriptRuntime<'a> {
-  pub fn new(script: Box<dyn Script>) -> Self {
+  pub fn new(script: Box<dyn Script>, script_manager: ScriptManagerDelegate) -> Self {
     Self {
       executor: LocalExecutor::new(),
-      script:   Arc::new(Mutex::new(script)),
-      status:   Arc::new(RwLock::new(ScriptStatus::Pending))
+      script: Arc::new(Mutex::new(script)),
+      status: Arc::new(RwLock::new(ScriptStatus::Pending)),
+      script_manager
     }
   }
 
   pub fn start(&self) {
     let script = self.script.clone();
     let status = self.status.clone();
+    let mut commands = ScriptCommands::new(self.script_manager.clone());
 
     self
       .executor
@@ -38,17 +42,17 @@ impl<'a> ScriptRuntime<'a> {
           match *status.read().unwrap() {
             ScriptStatus::Pending => {
               *status.write().unwrap() = ScriptStatus::Starting;
-              locked_script.start().await;
+              locked_script.start(&mut commands).await;
             }
             ScriptStatus::Starting => {
               *status.write().unwrap() = ScriptStatus::Running;
             }
             ScriptStatus::Running => {
-              locked_script.update().await;
+              locked_script.update(&mut commands).await;
               yield_async().await;
             }
             ScriptStatus::Stopping => {
-              locked_script.cleanup().await;
+              locked_script.cleanup(&mut commands).await;
               *status.write().unwrap() = ScriptStatus::Terminated;
             }
             ScriptStatus::Terminated => {
@@ -81,6 +85,18 @@ pub async fn yield_async() {
       Poll::Pending
     } else {
       Poll::Ready(())
+    }
+  })
+  .await;
+}
+
+pub async fn wait_async(duration: Duration) {
+  let wake_at = Instant::now() + duration;
+  ScriptFuture::new(move || {
+    if Instant::now() >= wake_at {
+      Poll::Ready(())
+    } else {
+      Poll::Pending
     }
   })
   .await;

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use log::{LevelFilter, Metadata, Record};
 use scripthookv::{
-  scripting::Script,
+  scripting::{Script, ScriptCommands},
   shv_entrypoint, ModuleHandle, ScriptHookV, ScriptHookVBuilder,
 };
 use scripthookv_gta::{
@@ -21,9 +21,9 @@ struct MyScript;
 
 #[async_trait]
 impl Script for MyScript {
-  async fn start(&mut self) {}
+  async fn start(&mut self, _commands: &mut ScriptCommands) {}
 
-  async fn update(&mut self) {
+  async fn update(&mut self, _commands: &mut ScriptCommands) {
     if misc::has_cheat_code_just_been_entered("test") {
       let player_ped = game::get_character().unwrap();
       let coords = player_ped.position();
@@ -37,7 +37,7 @@ impl Script for MyScript {
     }
   }
 
-  async fn cleanup(&mut self) {}
+  async fn cleanup(&mut self, _commands: &mut ScriptCommands) {}
 }
 struct SimpleLogger;
 
