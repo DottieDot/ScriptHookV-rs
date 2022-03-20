@@ -4,8 +4,9 @@ use shv_bindings::{KeyboardHandler, PresentCallback};
 use crate::{
   builder_plugin::BuilderPlugin,
   memory::{MemoryLocation, Scannable},
+  scripting::Script,
   sig_info::SigInfo,
-  GameVersion, ModuleHandle, ScriptHookV, scripting::Script
+  GameVersion, ModuleHandle, ScriptHookV
 };
 
 pub type ScriptFn = extern "C" fn();

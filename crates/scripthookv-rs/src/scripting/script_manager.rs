@@ -3,7 +3,7 @@ use super::{Script, ScriptRuntime, ScriptStatus};
 #[derive(Default)]
 pub struct ScriptManager<'a> {
   pending_scripts: Vec<Box<dyn Script>>,
-  scripts: Vec<ScriptRuntime<'a>>,
+  scripts:         Vec<ScriptRuntime<'a>>
 }
 
 impl<'a> ScriptManager<'a> {

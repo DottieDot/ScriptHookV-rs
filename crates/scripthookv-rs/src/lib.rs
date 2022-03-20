@@ -16,11 +16,11 @@ mod memory_database;
 mod script;
 mod scripthookv;
 mod scripthookv_builder;
+pub mod scripting;
 mod sig_info;
 mod texture;
 mod winapi;
 mod world;
-pub mod scripting;
 
 pub use builder_plugin::*;
 pub(crate) use callbacks::*;

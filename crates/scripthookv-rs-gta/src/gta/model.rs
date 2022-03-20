@@ -1,6 +1,6 @@
 use std::{
   task::Poll,
-  time::{Duration, Instant},
+  time::{Duration, Instant}
 };
 
 use scripthookv::{scripting::ScriptFuture, types::Hash};
@@ -11,7 +11,7 @@ use crate::natives::*;
 #[must_use]
 #[derive(Debug, Clone, Copy)]
 pub struct Model {
-  hash: Hash,
+  hash: Hash
 }
 
 impl Model {
@@ -78,7 +78,7 @@ impl std::fmt::Display for Model {
 
 #[derive(Debug)]
 pub struct InvalidModelError {
-  hash: Hash,
+  hash: Hash
 }
 
 impl std::fmt::Display for InvalidModelError {

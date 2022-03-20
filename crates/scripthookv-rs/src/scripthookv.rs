@@ -2,20 +2,24 @@ use log::{info, warn};
 use shv_bindings::{KeyboardHandler, PresentCallback};
 
 use crate::{
-  get_game_version, memory::ModuleMemoryScanner, memory_database::MemoryDatabase,
+  get_game_version,
+  memory::ModuleMemoryScanner,
+  memory_database::MemoryDatabase,
   register_keyboard_handler, register_present_callback, remove_keyboard_handler,
-  remove_present_callback, remove_script, scripting::{Script, ScriptManager}, sig_info::SigInfo, GameVersion,
-  ModuleHandle,
+  remove_present_callback, remove_script,
+  scripting::{Script, ScriptManager},
+  sig_info::SigInfo,
+  GameVersion, ModuleHandle
 };
 
 pub struct ScriptHookV<'a> {
-  module: ModuleHandle,
+  module:            ModuleHandle,
   present_callbacks: Vec<PresentCallback>,
   keyboard_handlers: Vec<KeyboardHandler>,
-  min_version: Option<GameVersion>,
-  max_version: Option<GameVersion>,
-  memory: MemoryDatabase,
-  script_engine: ScriptManager<'a>
+  min_version:       Option<GameVersion>,
+  max_version:       Option<GameVersion>,
+  memory:            MemoryDatabase,
+  script_engine:     ScriptManager<'a>
 }
 
 impl<'a> ScriptHookV<'a> {
@@ -34,7 +38,7 @@ impl<'a> ScriptHookV<'a> {
         panic!("Game version is not supported")
       }
       (None, _, Some(_)) | (None, Some(_), _) => panic!("Unknown game version"),
-      _ => (),
+      _ => ()
     }
 
     info!("Searching for {} signatures", sigs.len());
@@ -53,12 +57,18 @@ impl<'a> ScriptHookV<'a> {
       self.script_engine.add_script(script);
     }
 
-    info!("Registering {} present callbacks", self.present_callbacks.len());
+    info!(
+      "Registering {} present callbacks",
+      self.present_callbacks.len()
+    );
     for callback in &self.present_callbacks {
       register_present_callback(*callback);
     }
 
-    info!("Registering {} keyboard handlers", self.keyboard_handlers.len());
+    info!(
+      "Registering {} keyboard handlers",
+      self.keyboard_handlers.len()
+    );
     for handler in &self.keyboard_handlers {
       register_keyboard_handler(*handler);
     }
@@ -72,7 +82,7 @@ impl<'a> ScriptHookV<'a> {
     keyboard_handlers: Vec<KeyboardHandler>,
     sigs: &Vec<SigInfo>,
     min_version: Option<GameVersion>,
-    max_version: Option<GameVersion>,
+    max_version: Option<GameVersion>
   ) -> Self {
     let mut instance = Self {
       module,
