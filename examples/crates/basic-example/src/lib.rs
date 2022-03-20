@@ -1,25 +1,21 @@
 use async_trait::async_trait;
 use log::{LevelFilter, Metadata, Record};
 use scripthookv::{
-  scripting::{Script},
+  scripting::Script,
   shv_entrypoint, ModuleHandle, ScriptHookV, ScriptHookVBuilder,
 };
 use scripthookv_gta::{
   gta::{
     entities::{Entity, Vehicle},
-    Model,
+    Model, game, misc
   },
   ScriptHookVGtaPlugin,
 };
-use std::ffi::CString;
 use winapi::um::{
   consoleapi::AllocConsole,
   wincon::GetConsoleWindow,
   winuser::{ShowWindow, SW_SHOW},
 };
-
-mod natives;
-use natives::*;
 
 struct MyScript;
 
@@ -28,21 +24,16 @@ impl Script for MyScript {
   async fn start(&mut self) {}
 
   async fn update(&mut self) {
-    unsafe {
-      let test = CString::new("test").unwrap();
-      let test_hash = misc::get_hash_key(test.as_ptr());
+    if misc::has_cheat_code_just_been_entered("test") {
+      let player_ped = game::get_character().unwrap();
+      let coords = player_ped.position();
+      let heading = player_ped.heading();
+      let adder = Model::try_from("adder").unwrap();
 
-      if misc::_has_cheat_string_just_been_entered(test_hash) != 0 {
-        let player_ped = player::player_ped_id();
-        let coords = entity::get_entity_coords(player_ped, 1);
-        let heading = entity::get_entity_heading(player_ped);
-        let adder = Model::try_from("adder").unwrap();
+      adder.load_async().await.unwrap();
 
-        adder.load_async().await.unwrap();
-
-        let vehicle = Vehicle::create(adder, coords, heading).unwrap();
-        vehicle.set_explosion_proof(true);
-      }
+      let vehicle = Vehicle::create(adder, coords, heading).unwrap();
+      vehicle.set_explosion_proof(true);
     }
   }
 
