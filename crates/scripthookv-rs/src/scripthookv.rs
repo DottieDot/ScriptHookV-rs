@@ -2,28 +2,24 @@ use log::{info, warn};
 use shv_bindings::{KeyboardHandler, PresentCallback};
 
 use crate::{
-  get_game_version,
-  memory::ModuleMemoryScanner,
-  memory_database::MemoryDatabase,
+  get_game_version, memory::ModuleMemoryScanner, memory_database::MemoryDatabase,
   register_keyboard_handler, register_present_callback, remove_keyboard_handler,
-  remove_present_callback, remove_script,
-  scripting::{Script, ScriptManager},
-  sig_info::SigInfo,
-  GameVersion, ModuleHandle
+  remove_present_callback, remove_script, scripting::ScriptManager, sig_info::SigInfo, GameVersion,
+  ModuleHandle
 };
 
-pub struct ScriptHookV<'a> {
-  module:            ModuleHandle,
-  present_callbacks: Vec<PresentCallback>,
-  keyboard_handlers: Vec<KeyboardHandler>,
-  min_version:       Option<GameVersion>,
-  max_version:       Option<GameVersion>,
-  memory:            MemoryDatabase,
-  script_manager:    ScriptManager<'a>
+pub struct ScriptHookV {
+  module:                     ModuleHandle,
+  present_callbacks:          Vec<PresentCallback>,
+  keyboard_handlers:          Vec<KeyboardHandler>,
+  min_version:                Option<GameVersion>,
+  max_version:                Option<GameVersion>,
+  memory:                     MemoryDatabase,
+  startup_scripts_registrars: Vec<fn(&mut ScriptManager)>
 }
 
-impl<'a> ScriptHookV<'a> {
-  fn init(&mut self, sigs: &[SigInfo], scripts: Vec<Box<dyn Script<'a>>>) {
+impl ScriptHookV {
+  fn init(&mut self, sigs: &[SigInfo]) {
     info!(
       "Checking game version {:?} (min: {:?}) (max: {:?})",
       get_game_version(),
@@ -52,11 +48,6 @@ impl<'a> ScriptHookV<'a> {
       }
     }
 
-    info!("Registering {} scripts", scripts.len());
-    for script in scripts {
-      self.script_manager.add_script(script);
-    }
-
     info!(
       "Registering {} present callbacks",
       self.present_callbacks.len()
@@ -77,7 +68,7 @@ impl<'a> ScriptHookV<'a> {
   #[must_use]
   pub(crate) fn new(
     module: ModuleHandle,
-    scripts: Vec<Box<dyn Script<'a>>>,
+    startup_scripts_registrars: Vec<fn(&mut ScriptManager)>,
     present_callbacks: Vec<PresentCallback>,
     keyboard_handlers: Vec<KeyboardHandler>,
     sigs: &[SigInfo],
@@ -91,9 +82,9 @@ impl<'a> ScriptHookV<'a> {
       min_version,
       max_version,
       memory: MemoryDatabase::default(),
-      script_manager: Default::default()
+      startup_scripts_registrars
     };
-    instance.init(sigs, scripts);
+    instance.init(sigs);
     instance
   }
 
@@ -113,9 +104,13 @@ impl<'a> ScriptHookV<'a> {
     &self.memory
   }
 
-  pub fn update_scripts(&mut self) {
-    self.script_manager.tick();
+  pub fn new_script_manager_for_thread<'mgr>(&self) -> ScriptManager<'mgr> {
+    let mut manager = ScriptManager::default();
+    for registrar in &self.startup_scripts_registrars {
+      registrar(&mut manager)
+    }
+    manager
   }
 }
 
-unsafe impl<'a> Send for ScriptHookV<'a> {}
+unsafe impl Send for ScriptHookV {}

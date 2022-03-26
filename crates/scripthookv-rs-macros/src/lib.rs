@@ -10,17 +10,26 @@ pub fn shv_entrypoint(_metadata: TokenStream, item: TokenStream) -> TokenStream 
     #entrypoint
 
     static __SCRIPTHOOKV: ::once_cell::sync::OnceCell<::std::sync::Arc<::std::sync::Mutex<scripthookv::ScriptHookV>>> = ::once_cell::sync::OnceCell::new();
+    static mut __SCRIPT_MANAGER: ::std::option::Option<::scripthookv::scripting::ScriptManager> = None;
 
     extern "C" fn __shv_script_entrypoint() {
-      loop {
-        {
-          let mut shv = __SCRIPTHOOKV
-            .get()
-            .expect("ScriptHookv is not initialized")
-            .lock()
-            .unwrap();
-          shv.update_scripts();
+      let mut script_manager = {
+        unsafe {
+          if __SCRIPT_MANAGER.is_none() {
+            __SCRIPT_MANAGER = Some(
+              __SCRIPTHOOKV
+                .get()
+                .expect("ScriptHookv is not initialized")
+                .lock()
+                .unwrap()
+                .new_script_manager_for_thread()
+            );
+          }
+          __SCRIPT_MANAGER.as_mut().unwrap()
         }
+      };
+      loop {
+        script_manager.tick();
         unsafe {
           ::scripthookv::shv_bindings::scriptWait(0);
         }

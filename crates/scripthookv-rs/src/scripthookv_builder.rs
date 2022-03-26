@@ -4,31 +4,31 @@ use shv_bindings::{KeyboardHandler, PresentCallback};
 use crate::{
   builder_plugin::BuilderPlugin,
   memory::{MemoryLocation, Scannable},
-  scripting::Script,
+  scripting::ScriptManager,
   sig_info::SigInfo,
   GameVersion, ModuleHandle, ScriptHookV
 };
 
 pub type ScriptFn = extern "C" fn();
 
-pub struct ScriptHookVBuilder<'b> {
-  module:            ModuleHandle,
-  scripts:           Vec<Box<dyn Script<'b>>>,
-  present_callbacks: Vec<PresentCallback>,
-  keyboard_handlers: Vec<KeyboardHandler>,
-  min_version:       Option<GameVersion>,
-  max_version:       Option<GameVersion>,
-  plugins:           Vec<Box<dyn BuilderPlugin<'b>>>,
-  sigs:              Vec<SigInfo>
+pub struct ScriptHookVBuilder {
+  module:                    ModuleHandle,
+  startup_script_registrars: Vec<fn(&mut ScriptManager)>,
+  present_callbacks:         Vec<PresentCallback>,
+  keyboard_handlers:         Vec<KeyboardHandler>,
+  min_version:               Option<GameVersion>,
+  max_version:               Option<GameVersion>,
+  plugins:                   Vec<Box<dyn BuilderPlugin>>,
+  sigs:                      Vec<SigInfo>
 }
 
-impl<'b> ScriptHookVBuilder<'b> {
+impl ScriptHookVBuilder {
   #[inline]
   #[must_use]
   pub fn new(module: ModuleHandle) -> Self {
     Self {
       module,
-      scripts: Vec::default(),
+      startup_script_registrars: Vec::default(),
       present_callbacks: Vec::default(),
       keyboard_handlers: Vec::default(),
       min_version: None,
@@ -51,8 +51,8 @@ impl<'b> ScriptHookVBuilder<'b> {
   }
 
   #[inline]
-  pub fn script(mut self, script: impl Script<'b> + 'static) -> Self {
-    self.scripts.push(Box::new(script));
+  pub fn startup_script_registrar(mut self, registrar: fn(&mut ScriptManager)) -> Self {
+    self.startup_script_registrars.push(registrar);
     self
   }
 
@@ -69,7 +69,7 @@ impl<'b> ScriptHookVBuilder<'b> {
   }
 
   #[inline]
-  pub fn plugin(mut self, mut plugin: impl BuilderPlugin<'b> + 'static) -> Self {
+  pub fn plugin(mut self, mut plugin: impl BuilderPlugin + 'static) -> Self {
     info!("registered builder plugin {}", plugin.name());
     self = plugin.build(self);
     self.plugins.push(Box::new(plugin));
@@ -96,10 +96,10 @@ impl<'b> ScriptHookVBuilder<'b> {
 
   #[inline]
   #[must_use]
-  pub fn build(mut self) -> ScriptHookV<'b> {
+  pub fn build(mut self) -> ScriptHookV {
     let instance = ScriptHookV::new(
       self.module,
-      self.scripts,
+      self.startup_script_registrars,
       self.present_callbacks,
       self.keyboard_handlers,
       &self.sigs,

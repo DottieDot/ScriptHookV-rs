@@ -1,7 +1,7 @@
 use crate::{ScriptHookV, ScriptHookVBuilder};
 
-pub trait BuilderPlugin<'b> {
-  fn build(&mut self, builder: ScriptHookVBuilder<'b>) -> ScriptHookVBuilder<'b>;
+pub trait BuilderPlugin {
+  fn build(&mut self, builder: ScriptHookVBuilder) -> ScriptHookVBuilder;
 
   fn init(&mut self, shv: &ScriptHookV);
 

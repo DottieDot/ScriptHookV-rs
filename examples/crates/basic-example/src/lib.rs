@@ -71,7 +71,7 @@ impl log::Log for SimpleLogger {
 static LOGGER: SimpleLogger = SimpleLogger;
 
 #[shv_entrypoint]
-fn entrypoint(module: ModuleHandle) -> ScriptHookV<'static> {
+fn entrypoint(module: ModuleHandle) -> ScriptHookV {
   unsafe {
     AllocConsole();
     ShowWindow(GetConsoleWindow(), SW_SHOW);
@@ -91,6 +91,8 @@ fn entrypoint(module: ModuleHandle) -> ScriptHookV<'static> {
 
   ScriptHookVBuilder::new(module)
     .plugin(ScriptHookVGtaPlugin)
-    .script(MyScript)
+    .startup_script_registrar(|mgr| {
+      mgr.add_script(MyScript);
+    })
     .build()
 }

@@ -9,8 +9,8 @@ pub struct ScriptManager<'mgr> {
 }
 
 impl<'mgr> ScriptManager<'mgr> {
-  pub fn add_script(&mut self, script: Box<dyn Script<'mgr>>) {
-    self.pending_scripts.lock().unwrap().push(script);
+  pub fn add_script(&mut self, script: impl Script<'mgr> + 'static) {
+    self.pending_scripts.lock().unwrap().push(Box::new(script));
   }
 
   pub fn tick(&mut self) {
