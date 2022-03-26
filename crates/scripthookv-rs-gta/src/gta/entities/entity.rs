@@ -323,9 +323,9 @@ pub trait Entity {
   #[inline]
   fn set_fire_proof(&self, toggle: bool) {
     unsafe {
-      self
-        .get_entity_address()
-        .map(|l| l.add(0x188).set_bit_to(5, toggle));
+      if let Some(l) = self.get_entity_address() {
+        l.add(0x188).set_bit_to(5, toggle)
+      }
     }
   }
 
@@ -342,9 +342,9 @@ pub trait Entity {
   #[inline]
   fn set_melee_proof(&self, toggle: bool) {
     unsafe {
-      self
-        .get_entity_address()
-        .map(|l| l.add(0x188).set_bit_to(7, toggle));
+      if let Some(l) = self.get_entity_address() {
+        l.add(0x188).set_bit_to(7, toggle)
+      }
     }
   }
 
@@ -361,9 +361,9 @@ pub trait Entity {
   #[inline]
   fn set_bullet_proof(&self, toggle: bool) {
     unsafe {
-      self
-        .get_entity_address()
-        .map(|l| l.add(0x188).set_bit_to(4, toggle));
+      if let Some(l) = self.get_entity_address() {
+        l.add(0x188).set_bit_to(4, toggle)
+      }
     }
   }
 
@@ -380,9 +380,9 @@ pub trait Entity {
   #[inline]
   fn set_explosion_proof(&self, toggle: bool) {
     unsafe {
-      self
-        .get_entity_address()
-        .map(|l| l.add(0x188).set_bit_to(11, toggle));
+      if let Some(l) = self.get_entity_address() {
+        l.add(0x188).set_bit_to(11, toggle)
+      }
     }
   }
 
@@ -399,9 +399,9 @@ pub trait Entity {
   #[inline]
   fn set_collision_proof(&self, toggle: bool) {
     unsafe {
-      self
-        .get_entity_address()
-        .map(|l| l.add(0x188).set_bit_to(6, toggle));
+      if let Some(l) = self.get_entity_address() {
+        l.add(0x188).set_bit_to(6, toggle)
+      }
     }
   }
 

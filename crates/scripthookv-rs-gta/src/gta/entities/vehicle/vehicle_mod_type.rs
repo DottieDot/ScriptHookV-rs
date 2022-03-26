@@ -1,10 +1,10 @@
-use num_enum::{IntoPrimitive, TryFromPrimitive};
+use num_enum::{FromPrimitive, IntoPrimitive};
 use strum_macros::EnumIter;
 
 use super::Vehicle;
 use crate::natives::*;
 
-#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
+#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq, FromPrimitive, IntoPrimitive)]
 #[repr(i32)]
 pub enum VehicleModTypes {
   Spoiler         = 0,
@@ -49,7 +49,10 @@ pub enum VehicleModTypes {
   Trim2           = 44,
   FuelTank        = 45,
   Windows         = 46,
-  Livery          = 48
+  Livery          = 48,
+
+  #[num_enum(catch_all)]
+  Unknown(i32)
 }
 
 #[must_use]

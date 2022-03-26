@@ -1,3 +1,3 @@
-mod ped;
+mod ped_struct;
 
-pub use ped::*;
+pub use ped_struct::*;

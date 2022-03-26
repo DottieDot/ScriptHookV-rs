@@ -28,7 +28,7 @@ impl IdaPattern {
 
     let split = pattern.split(' ');
     for byte_string in split {
-      if byte_string.starts_with("?") {
+      if byte_string.starts_with('?') {
         mask.push('?');
         bytes.push(0x00);
       } else {

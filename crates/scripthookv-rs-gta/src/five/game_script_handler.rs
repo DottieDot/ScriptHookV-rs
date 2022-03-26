@@ -1,4 +1,4 @@
-use std::{ffi::c_void, ptr};
+use std::ffi::c_void;
 
 use scripthookv::memory::MemoryLocation;
 
@@ -11,7 +11,7 @@ pub fn get_script_entity_safe(handle: i32) -> Option<MemoryLocation> {
       .unwrap()
       .cast::<extern "C" fn(handle: i32) -> *mut c_void>();
     let address = function(handle);
-    if address != ptr::null_mut() {
+    if !address.is_null() {
       Some(MemoryLocation::new(address as usize))
     } else {
       None

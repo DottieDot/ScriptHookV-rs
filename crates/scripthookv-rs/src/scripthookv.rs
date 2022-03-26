@@ -19,7 +19,7 @@ pub struct ScriptHookV<'a> {
   min_version:       Option<GameVersion>,
   max_version:       Option<GameVersion>,
   memory:            MemoryDatabase,
-  script_engine:     ScriptManager<'a>
+  script_manager:    ScriptManager<'a>
 }
 
 impl<'a> ScriptHookV<'a> {
@@ -54,7 +54,7 @@ impl<'a> ScriptHookV<'a> {
 
     info!("Registering {} scripts", scripts.len());
     for script in scripts {
-      self.script_engine.add_script(script);
+      self.script_manager.add_script(script);
     }
 
     info!(
@@ -91,7 +91,7 @@ impl<'a> ScriptHookV<'a> {
       min_version,
       max_version,
       memory: MemoryDatabase::default(),
-      script_engine: Default::default()
+      script_manager: Default::default()
     };
     instance.init(sigs, scripts);
     instance
@@ -114,10 +114,8 @@ impl<'a> ScriptHookV<'a> {
   }
 
   pub fn update_scripts(&mut self) {
-    self.script_engine.tick();
+    self.script_manager.tick();
   }
 }
 
 unsafe impl<'a> Send for ScriptHookV<'a> {}
-
-unsafe impl<'a> Sync for ScriptHookV<'a> {}

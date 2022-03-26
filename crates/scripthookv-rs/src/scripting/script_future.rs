@@ -2,14 +2,14 @@ use smol::future::Future;
 
 pub struct ScriptFuture<T, Fun>
 where
-  Fun: FnMut() -> std::task::Poll<T>
+  Fun: FnMut() -> std::task::Poll<T> + Send
 {
   poll: Box<Fun>
 }
 
 impl<T, Fun> ScriptFuture<T, Fun>
 where
-  Fun: FnMut() -> std::task::Poll<T>
+  Fun: FnMut() -> std::task::Poll<T> + Send
 {
   pub fn new(fun: Fun) -> Self {
     Self {
@@ -20,7 +20,7 @@ where
 
 impl<T, Fun> Future for ScriptFuture<T, Fun>
 where
-  Fun: FnMut() -> std::task::Poll<T>
+  Fun: FnMut() -> std::task::Poll<T> + Send
 {
   type Output = T;
 
@@ -33,4 +33,4 @@ where
   }
 }
 
-unsafe impl<T, Fun> Send for ScriptFuture<T, Fun> where Fun: FnMut() -> std::task::Poll<T> {}
+unsafe impl<T, Fun> Send for ScriptFuture<T, Fun> where Fun: FnMut() -> std::task::Poll<T> + Send {}

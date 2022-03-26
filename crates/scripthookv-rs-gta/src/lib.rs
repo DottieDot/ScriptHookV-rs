@@ -1,3 +1,5 @@
+#![feature(arbitrary_enum_discriminant)]
+
 mod natives;
 
 pub mod color;

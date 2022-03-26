@@ -4,7 +4,7 @@ use async_trait::async_trait;
 
 use super::ScriptCommands;
 
-#[async_trait]
+#[async_trait(?Send)]
 pub trait Script<'rt> {
   async fn start(&mut self, commands: Arc<ScriptCommands<'rt>>);
   async fn update(&mut self, commands: Arc<ScriptCommands<'rt>>);

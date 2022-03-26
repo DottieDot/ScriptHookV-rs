@@ -258,8 +258,7 @@ impl VehicleColorManager {
   #[must_use]
   pub fn license_plate_style(&self) -> VehicleLicensePlateStyle {
     let style = unsafe { vehicle::get_vehicle_number_plate_text_index(self.vehicle.into()) };
-    VehicleLicensePlateStyle::try_from(style)
-      .expect("invalid license plate style returned from get_vehicle_number_plate_text_index")
+    VehicleLicensePlateStyle::from(style)
   }
 
   #[inline]

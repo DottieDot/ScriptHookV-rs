@@ -46,7 +46,7 @@ impl VehicleModManager {
   #[inline]
   #[must_use]
   pub fn has_mod_type(&self, mod_type: VehicleModTypes) -> bool {
-    unsafe { vehicle::get_num_vehicle_mods(self.vehicle.into(), mod_type as i32) != 0 }
+    unsafe { vehicle::get_num_vehicle_mods(self.vehicle.into(), mod_type.into()) != 0 }
   }
 
   #[inline]

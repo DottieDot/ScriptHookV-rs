@@ -30,4 +30,3 @@ impl<'rt> ScriptCommands<'rt> {
 }
 
 unsafe impl<'rt> Sync for ScriptCommands<'rt> {}
-unsafe impl<'rt> Send for ScriptCommands<'rt> {}

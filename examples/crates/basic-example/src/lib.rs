@@ -21,7 +21,7 @@ use winapi::um::{
 
 struct MyScript;
 
-#[async_trait]
+#[async_trait(?Send)]
 impl<'rt> Script<'rt> for MyScript {
   async fn start(&mut self, _commands: Arc<ScriptCommands<'rt>>) {}
 

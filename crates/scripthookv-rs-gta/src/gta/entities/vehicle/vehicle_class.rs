@@ -1,6 +1,6 @@
-use num_enum::{IntoPrimitive, TryFromPrimitive};
+use num_enum::{FromPrimitive, IntoPrimitive};
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, FromPrimitive, IntoPrimitive)]
 #[repr(i32)]
 pub enum VehicleClass {
   Compacts       = 0,
@@ -25,5 +25,8 @@ pub enum VehicleClass {
   Military       = 19,
   Commercial     = 20,
   Trains         = 21,
-  OpenWheel      = 22
+  OpenWheel      = 22,
+
+  #[num_enum(catch_all)]
+  Unknown(i32)
 }
