@@ -53,7 +53,7 @@ impl MemoryScanner for ModuleMemoryScanner {
     for i in 0..scan_range {
       for j in 0..scannable.len() {
         unsafe {
-          if ptr::read(memory.offset((i + j) as isize)) != bytes[j] && mask[j] != '?' {
+          if ptr::read(memory.add(i + j)) != bytes[j] && mask[j] != '?' {
             break;
           }
         }

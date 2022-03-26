@@ -27,7 +27,10 @@ impl<'rt> ScriptRuntime<'rt> {
   pub fn start(&self) {
     let script = self.script.clone();
     let status = self.status.clone();
-    let commands = Arc::new(ScriptCommands::new(self.script_manager.clone(), self.executor.clone()));
+    let commands = Arc::new(ScriptCommands::new(
+      self.script_manager.clone(),
+      self.executor.clone()
+    ));
 
     self
       .executor

@@ -23,7 +23,7 @@ pub struct ScriptHookV<'a> {
 }
 
 impl<'a> ScriptHookV<'a> {
-  fn init(&mut self, sigs: &Vec<SigInfo>, scripts: Vec<Box<dyn Script<'a>>>) {
+  fn init(&mut self, sigs: &[SigInfo], scripts: Vec<Box<dyn Script<'a>>>) {
     info!(
       "Checking game version {:?} (min: {:?}) (max: {:?})",
       get_game_version(),
@@ -80,7 +80,7 @@ impl<'a> ScriptHookV<'a> {
     scripts: Vec<Box<dyn Script<'a>>>,
     present_callbacks: Vec<PresentCallback>,
     keyboard_handlers: Vec<KeyboardHandler>,
-    sigs: &Vec<SigInfo>,
+    sigs: &[SigInfo],
     min_version: Option<GameVersion>,
     max_version: Option<GameVersion>
   ) -> Self {
