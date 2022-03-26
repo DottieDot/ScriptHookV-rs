@@ -1,6 +1,6 @@
 [package]
 name = "scripthookv-rs"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 description = "Rust bindings for ScriptHookV"
 license = "MIT"
@@ -18,7 +18,7 @@ targets = ["x86_64-pc-windows-msvc"]
 
 [dependencies]
 libscripthookv-sys = "0.1.0"
-scripthookv-rs-macros = { version = "0.1.0", path = "../scripthookv-rs-macros" }
+scripthookv-rs-macros = { version = "0.2.0", path = "../scripthookv-rs-macros" }
 log = "0.4.14"
 thiserror = "1.0"
 winapi = { version = "0.3.9", features = [ "psapi", "processthreadsapi", "libloaderapi" ] }

@@ -10,7 +10,7 @@ Scripthookv-rs provides Rust bindings for ScriptHookV and GTA 5 natives.
 This crate contains the raw bindings for ScriptHookV without any wrapping.
 
 #### Installation
-Add the following to your `cargo.toml`:
+Add the following to your `cargo.toml` dependencies:
 
 ```toml
 libscripthookv-sys = "0.1.0"
@@ -20,11 +20,13 @@ libscripthookv-sys = "0.1.0"
 This crate contains a wrapped api for ScriptHookV
 
 #### Installation
-Add the following to your `cargo.toml`:
+Add the following to your `cargo.toml` dependencies:
 
 ```toml
-scripthookv-rs = "0.2.1"
+scripthookv-rs = "0.3.0"
 once_cell = "1.9.0"
+winapi = { version = "0.3.9", features = [ "consoleapi", "winuser", "wincon" ] }
+async-trait = "0.1.52"
 ```
 
 ### scripthookv-rs-gta
