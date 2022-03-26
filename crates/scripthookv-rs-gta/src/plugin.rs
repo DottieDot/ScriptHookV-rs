@@ -3,8 +3,8 @@ use scripthookv::{memory::IdaPattern, BuilderPlugin, ScriptHookV, ScriptHookVBui
 
 pub struct ScriptHookVGtaPlugin;
 
-impl BuilderPlugin for ScriptHookVGtaPlugin {
-  fn build(&mut self, builder: ScriptHookVBuilder) -> ScriptHookVBuilder {
+impl<'b> BuilderPlugin<'b> for ScriptHookVGtaPlugin {
+  fn build(&mut self, builder: ScriptHookVBuilder<'b>) -> ScriptHookVBuilder<'b> {
     builder.sig_with_offset(
       "CGameScriptHandler::GetScriptEntitySafe".into(),
       IdaPattern::new("E8 ? ? ? ? 48 89 44 24 ? 45 33 C9").unwrap(),

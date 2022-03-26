@@ -11,18 +11,18 @@ use crate::{
 
 pub type ScriptFn = extern "C" fn();
 
-pub struct ScriptHookVBuilder {
+pub struct ScriptHookVBuilder<'b> {
   module:            ModuleHandle,
-  scripts:           Vec<Box<dyn Script>>,
+  scripts:           Vec<Box<dyn Script<'b>>>,
   present_callbacks: Vec<PresentCallback>,
   keyboard_handlers: Vec<KeyboardHandler>,
   min_version:       Option<GameVersion>,
   max_version:       Option<GameVersion>,
-  plugins:           Vec<Box<dyn BuilderPlugin>>,
+  plugins:           Vec<Box<dyn BuilderPlugin<'b>>>,
   sigs:              Vec<SigInfo>
 }
 
-impl ScriptHookVBuilder {
+impl<'b> ScriptHookVBuilder<'b> {
   #[inline]
   #[must_use]
   pub fn new(module: ModuleHandle) -> Self {
@@ -51,7 +51,7 @@ impl ScriptHookVBuilder {
   }
 
   #[inline]
-  pub fn script(mut self, script: impl Script + 'static) -> Self {
+  pub fn script(mut self, script: impl Script<'b> + 'static) -> Self {
     self.scripts.push(Box::new(script));
     self
   }
@@ -69,7 +69,7 @@ impl ScriptHookVBuilder {
   }
 
   #[inline]
-  pub fn plugin(mut self, mut plugin: impl BuilderPlugin + 'static) -> Self {
+  pub fn plugin(mut self, mut plugin: impl BuilderPlugin<'b> + 'static) -> Self {
     info!("registered builder plugin {}", plugin.name());
     self = plugin.build(self);
     self.plugins.push(Box::new(plugin));
@@ -96,7 +96,7 @@ impl ScriptHookVBuilder {
 
   #[inline]
   #[must_use]
-  pub fn build<'a>(mut self) -> ScriptHookV<'a> {
+  pub fn build(mut self) -> ScriptHookV<'b> {
     let instance = ScriptHookV::new(
       self.module,
       self.scripts,

@@ -1,7 +1,9 @@
+use std::{thread, time::Duration, sync::Arc};
+
 use async_trait::async_trait;
-use log::{LevelFilter, Metadata, Record};
+use log::{LevelFilter, Metadata, Record, info};
 use scripthookv::{
-  scripting::{Script, ScriptCommands},
+  scripting::{Script, ScriptCommands, yield_async},
   shv_entrypoint, ModuleHandle, ScriptHookV, ScriptHookVBuilder,
 };
 use scripthookv_gta::{
@@ -20,24 +22,33 @@ use winapi::um::{
 struct MyScript;
 
 #[async_trait]
-impl Script for MyScript {
-  async fn start(&mut self, _commands: &mut ScriptCommands) {}
+impl<'rt> Script<'rt> for MyScript {
+  async fn start(&mut self, _commands: Arc<ScriptCommands<'rt>>) {}
 
-  async fn update(&mut self, _commands: &mut ScriptCommands) {
+  async fn update(&mut self, commands: Arc<ScriptCommands<'rt>>) {
     if misc::has_cheat_code_just_been_entered("test") {
-      let player_ped = game::get_character().unwrap();
-      let coords = player_ped.position();
-      let heading = player_ped.heading();
-      let adder = Model::try_from("adder").unwrap();
+      info!("Start spawn task");
+      commands.spawn_task(async move {
+        let player_ped = game::get_character().unwrap();
+        let coords = player_ped.position();
+        let heading = player_ped.heading();
+        let adder = Model::try_from("adder").unwrap();
 
-      adder.load_async().await.unwrap();
-
-      let vehicle = Vehicle::create(adder, coords, heading).unwrap();
-      vehicle.set_explosion_proof(true);
+        for _ in 0..10 {
+          info!("Waiting...");
+          yield_async().await;
+        }
+  
+        adder.load_async().await.unwrap();
+  
+        let vehicle = Vehicle::create(adder, coords, heading).unwrap();
+        vehicle.set_explosion_proof(true);
+      }).detach();
     }
+    info!("Tick");
   }
 
-  async fn cleanup(&mut self, _commands: &mut ScriptCommands) {}
+  async fn cleanup(&mut self, _commands: Arc<ScriptCommands<'rt>>) {}
 }
 struct SimpleLogger;
 
@@ -59,10 +70,13 @@ static LOGGER: SimpleLogger = SimpleLogger;
 
 #[shv_entrypoint]
 fn entrypoint(module: ModuleHandle) -> ScriptHookV<'static> {
-  unsafe {
-    AllocConsole();
-    ShowWindow(GetConsoleWindow(), SW_SHOW);
-  }
+  thread::spawn(|| {
+    thread::sleep(Duration::from_secs(5));
+    unsafe {
+      AllocConsole();
+      ShowWindow(GetConsoleWindow(), SW_SHOW);
+    }
+  });
 
   log::set_logger(&LOGGER)
     .map(|_| log::set_max_level(LevelFilter::Trace))

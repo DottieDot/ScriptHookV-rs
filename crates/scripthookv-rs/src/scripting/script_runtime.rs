@@ -7,17 +7,17 @@ use std::{
 use super::{Script, ScriptCommands, ScriptFuture, ScriptManagerDelegate, ScriptStatus};
 use smol::LocalExecutor;
 
-pub struct ScriptRuntime<'a> {
-  executor:       LocalExecutor<'a>,
-  script:         Arc<Mutex<Box<dyn Script>>>,
+pub struct ScriptRuntime<'rt> {
+  executor:       Arc<LocalExecutor<'rt>>,
+  script:         Arc<Mutex<Box<dyn Script<'rt>>>>,
   status:         Arc<RwLock<ScriptStatus>>,
-  script_manager: ScriptManagerDelegate
+  script_manager: ScriptManagerDelegate<'rt>
 }
 
-impl<'a> ScriptRuntime<'a> {
-  pub fn new(script: Box<dyn Script>, script_manager: ScriptManagerDelegate) -> Self {
+impl<'rt> ScriptRuntime<'rt> {
+  pub fn new(script: Box<dyn Script<'rt>>, script_manager: ScriptManagerDelegate<'rt>) -> Self {
     Self {
-      executor: LocalExecutor::new(),
+      executor: Arc::new(LocalExecutor::new()),
       script: Arc::new(Mutex::new(script)),
       status: Arc::new(RwLock::new(ScriptStatus::Pending)),
       script_manager
@@ -27,7 +27,7 @@ impl<'a> ScriptRuntime<'a> {
   pub fn start(&self) {
     let script = self.script.clone();
     let status = self.status.clone();
-    let mut commands = ScriptCommands::new(self.script_manager.clone());
+    let commands = Arc::new(ScriptCommands::new(self.script_manager.clone(), self.executor.clone()));
 
     self
       .executor
@@ -39,20 +39,21 @@ impl<'a> ScriptRuntime<'a> {
             *status.write().unwrap() = ScriptStatus::Stopping;
           }
 
-          match *status.read().unwrap() {
+          let st = *status.read().unwrap();
+          match st {
             ScriptStatus::Pending => {
               *status.write().unwrap() = ScriptStatus::Starting;
-              locked_script.start(&mut commands).await;
+              locked_script.start(commands.clone()).await;
             }
             ScriptStatus::Starting => {
               *status.write().unwrap() = ScriptStatus::Running;
             }
             ScriptStatus::Running => {
-              locked_script.update(&mut commands).await;
+              locked_script.update(commands.clone()).await;
               yield_async().await;
             }
             ScriptStatus::Stopping => {
-              locked_script.cleanup(&mut commands).await;
+              locked_script.cleanup(commands.clone()).await;
               *status.write().unwrap() = ScriptStatus::Terminated;
             }
             ScriptStatus::Terminated => {

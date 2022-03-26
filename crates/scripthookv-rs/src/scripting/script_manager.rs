@@ -3,13 +3,13 @@ use std::sync::{Arc, Mutex};
 use super::{Script, ScriptRuntime, ScriptStatus};
 
 #[derive(Default)]
-pub struct ScriptManager<'a> {
-  pending_scripts: Arc<Mutex<Vec<Box<dyn Script>>>>,
-  scripts:         Vec<ScriptRuntime<'a>>
+pub struct ScriptManager<'mgr> {
+  pending_scripts: Arc<Mutex<Vec<Box<dyn Script<'mgr>>>>>,
+  scripts:         Vec<ScriptRuntime<'mgr>>
 }
 
-impl<'a> ScriptManager<'a> {
-  pub fn add_script(&mut self, script: Box<dyn Script>) {
+impl<'mgr> ScriptManager<'mgr> {
+  pub fn add_script(&mut self, script: Box<dyn Script<'mgr>>) {
     self.pending_scripts.lock().unwrap().push(script);
   }
 
@@ -35,12 +35,12 @@ impl<'a> ScriptManager<'a> {
 }
 
 #[derive(Clone)]
-pub struct ScriptManagerDelegate {
-  pending_scripts: Arc<Mutex<Vec<Box<dyn Script>>>>
+pub struct ScriptManagerDelegate<'mgr> {
+  pending_scripts: Arc<Mutex<Vec<Box<dyn Script<'mgr>>>>>
 }
 
-impl ScriptManagerDelegate {
-  pub fn add_script(&mut self, script: Box<dyn Script>) {
+impl<'mgr> ScriptManagerDelegate<'mgr> {
+  pub fn add_script(&self, script: Box<dyn Script<'mgr>>) {
     self.pending_scripts.lock().unwrap().push(script)
   }
 }
