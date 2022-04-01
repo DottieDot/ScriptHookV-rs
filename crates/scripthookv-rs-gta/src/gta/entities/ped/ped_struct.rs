@@ -12,7 +12,7 @@ impl Entity for Ped {
   /// Gets the underlying entity handle.
   #[inline]
   #[must_use]
-  fn handle(&self) -> scripthookv::types::Entity {
+  fn handle(&self) -> NativePed {
     self.handle
   }
 }
