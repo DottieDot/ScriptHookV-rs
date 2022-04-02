@@ -10,30 +10,29 @@ pub fn shv_entrypoint(_metadata: TokenStream, item: TokenStream) -> TokenStream 
     #entrypoint
 
     static __SCRIPTHOOKV: ::once_cell::sync::OnceCell<::std::sync::Arc<::std::sync::Mutex<scripthookv::ScriptHookV>>> = ::once_cell::sync::OnceCell::new();
-    static mut __SCRIPT_MANAGER: ::std::option::Option<::scripthookv::scripting::ScriptManager> = None;
+
+    thread_local! {
+      static __SCRIPT_MANAGER: ::once_cell::unsync::OnceCell<::std::cell::RefCell<::scripthookv::scripting::ScriptManager<'static>>> = ::once_cell::unsync::OnceCell::new();
+    }
 
     extern "C" fn __shv_script_entrypoint() {
-      let mut script_manager = {
-        unsafe {
-          if __SCRIPT_MANAGER.is_none() {
-            __SCRIPT_MANAGER = Some(
-              __SCRIPTHOOKV
-                .get()
-                .expect("ScriptHookv is not initialized")
-                .lock()
-                .unwrap()
-                .new_script_manager_for_thread()
-            );
+      __SCRIPT_MANAGER.with(|shvm| {
+        let mut script_manager = shvm.get_or_init(|| {
+          __SCRIPTHOOKV
+            .get()
+            .expect("ScriptHookv is not initialized")
+            .lock()
+            .unwrap()
+            .new_script_manager_for_thread()
+            .into()
+        }).borrow_mut();
+        loop {
+          script_manager.tick();
+          unsafe {
+            ::scripthookv::shv_bindings::scriptWait(0);
           }
-          __SCRIPT_MANAGER.as_mut().unwrap()
         }
-      };
-      loop {
-        script_manager.tick();
-        unsafe {
-          ::scripthookv::shv_bindings::scriptWait(0);
-        }
-      }
+      });
     }
 
     #[no_mangle]
