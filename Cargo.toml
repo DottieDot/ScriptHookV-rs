@@ -3,5 +3,6 @@ members = [
   "./crates/libscripthookv-sys",
   "./crates/scripthookv-rs",
   "./crates/scripthookv-rs-gta",
+  "./crates/scripthookv-rs-gui",
   "./crates/scripthookv-rs-macros"
 ]
