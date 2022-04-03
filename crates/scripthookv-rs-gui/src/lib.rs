@@ -1,3 +1,4 @@
+pub mod gui;
 
 mod event_emitter;
 
