@@ -10,7 +10,7 @@ pub struct SubmenuSelection {
 }
 
 impl SubmenuSelection {
-  pub fn update_for_removed_entry(&mut self, index: usize, entry: &dyn MenuEntry) {
+  pub fn update_for_drained_entry(&mut self, index: usize, entry: &dyn MenuEntry) {
     if entry.is_selectable() {
       self.selectable_count -= 1
     }
@@ -18,72 +18,57 @@ impl SubmenuSelection {
       return;
     }
     let selected = self.selected_index.as_mut().unwrap();
-    if *selected < index {
+    if *selected < index && *selected != 0 {
       *selected -= 1
     }
-    if *selected < index && entry.is_selectable() {
+    if *selected < index && *selected != 0 && entry.is_selectable() {
       self.selectable_selected -= 1
+    }
+  }
+
+  pub fn update_for_removed_entry(
+    &mut self,
+    index: usize,
+    entry: &dyn MenuEntry,
+    entries: &SubmenuEntries
+  ) {
+    self.update_for_drained_entry(index, entry);
+    if let Some(selected) = self.selected_index {
+      match entries.list().get(selected) {
+        Some(entry) if !entry.is_selectable() => {
+          self.selected_index = entries.find_nearest_entry_index(selected, |_, e| e.is_selectable())
+        }
+        None => self.selected_index = None,
+        _ => {}
+      }
+    }
+  }
+
+  pub fn post_drain(&mut self, entries: &SubmenuEntries) {
+    match self.selected_index {
+      Some(selected) => {
+        self.selected_index = entries.find_nearest_entry_index(selected, |_, e| e.is_selectable())
+      }
+      None => {}
     }
   }
 
   pub fn update_for_inserted_entry(&mut self, index: usize, entry: &dyn MenuEntry) {
     if entry.is_selectable() {
       self.selectable_count += 1;
-    }
-    if self.selected_index.is_none() {
+      if self.selected_index.is_none() {
+        self.selected_index = Some(index);
+        self.selectable_selected = 0
+      }
       return;
     }
+
     let selected = self.selected_index.as_mut().unwrap();
     if index <= *selected {
       *selected += 1
     }
     if index <= *selected && entry.is_selectable() {
       self.selectable_selected += 1
-    }
-  }
-
-  pub fn post_drain(&mut self, entries: &SubmenuEntries) {
-    // No entries so nothing can be selected
-    if entries.is_empty() {
-      self.selected_index = None
-    } 
-    // Nothing was selected so nothing can be selected now
-    else if self.selected_index.is_none() {
-      // no-op
-    } 
-    // If the selection is now out of range, then get the last selectable entry
-    else if self.selected_index.unwrap() >= entries.len() {
-      self.selected_index =
-        entries.find_nearest_entry_index(entries.len(), |_, e| e.is_selectable());
-      if self.selected_index.is_some() {
-        self.selectable_selected = self.selectable_count - 1
-      }
-    } 
-    // If the current selection is not selectable, then get the nearest selectable
-    else if unsafe {
-      !entries
-        .list()
-        .get_unchecked(self.selected_index.unwrap())
-        .is_selectable()
-    } {
-      if let Some(new) =
-        entries.find_nearest_entry_index(self.selected_index.unwrap(), |_, e| e.is_selectable())
-      {
-        if new < self.selected_index.unwrap() {
-          self.scroll_up(entries.list());
-        } else {
-          self.scroll_down(entries.list());
-        }
-      }
-    }
-  }
-
-  pub fn post_insert(&mut self, entries: &SubmenuEntries) {
-    if self.selected_index.is_none() {
-      if let Some(new_index) = entries.find_nearest_entry_index(0, |_, e| e.is_selectable()) {
-        self.selected_index = Some(new_index);
-        self.selectable_selected = 1
-      }
     }
   }
 

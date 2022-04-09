@@ -5,17 +5,16 @@ use crate::EventEmitter;
 use super::{SubmenuEntries, SubmenuSelection};
 
 pub struct Submenu {
-  title:          String,
-  subtitle:       String,
-  event_emitter:  EventEmitter<Self>,
-  entries:        SubmenuEntries,
-  selection: Rc<RwLock<SubmenuSelection>>
+  title:         String,
+  subtitle:      String,
+  event_emitter: EventEmitter<Self>,
+  entries:       SubmenuEntries,
+  selection:     Rc<RwLock<SubmenuSelection>>
 }
 
 impl Submenu {
   pub fn new(title: String, subtitle: String, build_fn: impl Fn(&mut SubmenuEntries)) -> Self {
-    let selection: Rc<RwLock<SubmenuSelection>> =
-      Rc::new(RwLock::new(SubmenuSelection::default()));
+    let selection: Rc<RwLock<SubmenuSelection>> = Rc::new(RwLock::new(SubmenuSelection::default()));
 
     let mut entries = SubmenuEntries::new(selection.clone());
     build_fn(&mut entries);

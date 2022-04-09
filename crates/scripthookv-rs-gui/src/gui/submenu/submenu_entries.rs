@@ -1,8 +1,9 @@
 use std::{
   borrow::Borrow,
+  cmp,
   ops::{Range, RangeBounds},
   rc::Rc,
-  sync::RwLock, cmp
+  sync::RwLock
 };
 
 use crate::gui::{MenuEntry, SubmenuSelection};
@@ -51,9 +52,9 @@ impl SubmenuEntries {
   pub fn remove(&mut self, range: impl RangeBounds<usize>) {
     let mut selection_info = self.selection_info.write().unwrap();
     for (index, entry) in self.entries.drain(range).enumerate() {
-      selection_info.update_for_removed_entry(index, entry.borrow())
+      selection_info.update_for_drained_entry(index, entry.borrow())
     }
-    selection_info.post_drain(self);
+    selection_info.post_drain(self)
   }
 
   pub fn filter_range(
@@ -66,13 +67,12 @@ impl SubmenuEntries {
     for i in range {
       let index = i - deleted;
       if predicate(index, &self.entries[index]) {
-        selection_info.update_for_removed_entry(index, self.entries[index].borrow());
+        selection_info.update_for_removed_entry(index, self.entries[index].borrow(), self);
 
         self.entries.remove(index);
         deleted += 1;
       }
     }
-    selection_info.post_drain(self);
   }
 
   pub fn filter(&mut self, predicate: impl Fn(usize, &Box<dyn MenuEntry>) -> bool) {
@@ -83,9 +83,13 @@ impl SubmenuEntries {
     &self.entries
   }
 
-  pub fn find_nearest_entry_index(&self, index: usize, predicate: impl Fn(usize, &Box<dyn MenuEntry>) -> bool) -> Option<usize> {
+  pub fn find_nearest_entry_index(
+    &self,
+    index: usize,
+    predicate: impl Fn(usize, &Box<dyn MenuEntry>) -> bool
+  ) -> Option<usize> {
     if self.entries.is_empty() {
-      return None
+      return None;
     }
 
     let center = if index < self.entries.len() {
@@ -96,19 +100,19 @@ impl SubmenuEntries {
     let range = cmp::max(center, self.entries.len() - 1 - center);
 
     if predicate(center, &self.entries[center]) {
-      return Some(center)
+      return Some(center);
     }
 
     for n in 1..=range {
       if let Some(before) = center.checked_sub(n) {
         if predicate(before, &self.entries[before]) {
-          return Some(before)
+          return Some(before);
         }
       }
 
       if let Some(after) = center.checked_add(n) {
         if predicate(after, &self.entries[after]) {
-          return Some(after)
+          return Some(after);
         }
       }
     }
