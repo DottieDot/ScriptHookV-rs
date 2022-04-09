@@ -9,15 +9,15 @@ pub struct Submenu {
   subtitle:       String,
   event_emitter:  EventEmitter<Self>,
   entries:        SubmenuEntries,
-  selection_info: Rc<RwLock<SubmenuSelection>>
+  selection: Rc<RwLock<SubmenuSelection>>
 }
 
 impl Submenu {
   pub fn new(title: String, subtitle: String, build_fn: impl Fn(&mut SubmenuEntries)) -> Self {
-    let selection_info: Rc<RwLock<SubmenuSelection>> =
+    let selection: Rc<RwLock<SubmenuSelection>> =
       Rc::new(RwLock::new(SubmenuSelection::default()));
 
-    let mut entries = SubmenuEntries::new(selection_info.clone());
+    let mut entries = SubmenuEntries::new(selection.clone());
     build_fn(&mut entries);
 
     Self {
@@ -25,7 +25,7 @@ impl Submenu {
       subtitle,
       event_emitter: Default::default(),
       entries,
-      selection_info
+      selection
     }
   }
 
@@ -51,17 +51,17 @@ impl Submenu {
 
   pub fn scroll_up(&mut self) {
     self
-      .selection_info
+      .selection
       .write()
       .unwrap()
-      .scroll_up(self.entries.raw());
+      .scroll_up(self.entries.list());
   }
 
   pub fn scroll_down(&mut self) {
     self
-      .selection_info
+      .selection
       .write()
       .unwrap()
-      .scroll_down(self.entries.raw());
+      .scroll_down(self.entries.list());
   }
 }
