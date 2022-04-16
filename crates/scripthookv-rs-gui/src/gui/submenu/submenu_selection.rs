@@ -45,11 +45,8 @@ impl SubmenuSelection {
   }
 
   pub fn post_drain(&mut self, entries: &SubmenuEntries) {
-    match self.selected_index {
-      Some(selected) => {
-        self.selected_index = entries.find_nearest_entry_index(selected, |_, e| e.is_selectable())
-      }
-      None => {}
+    if let Some(selected) = self.selected_index {
+      self.selected_index = entries.find_nearest_entry_index(selected, |_, e| e.is_selectable())
     }
   }
 
