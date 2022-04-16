@@ -69,7 +69,7 @@ impl SubmenuSelection {
     }
   }
 
-  pub fn scroll_up(&mut self, entries: &Vec<Box<dyn MenuEntry>>) {
+  pub fn scroll_up(&mut self, entries: &[Box<dyn MenuEntry>]) {
     if self.selected_index.is_none() {
       return;
     }
@@ -92,7 +92,7 @@ impl SubmenuSelection {
     }
   }
 
-  pub fn scroll_down(&mut self, entries: &Vec<Box<dyn MenuEntry>>) {
+  pub fn scroll_down(&mut self, entries: &[Box<dyn MenuEntry>]) {
     if self.selected_index.is_none() {
       return;
     }
