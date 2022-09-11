@@ -1,19 +1,18 @@
 use std::vec::Vec;
 
-use shv_bindings::{worldGetAllObjects, worldGetAllPeds, worldGetAllPickups, worldGetAllVehicles};
+use crate::{
+  scripting_backend::BACKEND,
+  types::{Object, Ped, Pickup, Vehicle}
+};
 
-use crate::types::{Object, Ped, Pickup, Vehicle};
+fn get_all_wrapper(function: impl Fn(*mut i32, i32) -> i32) -> Vec<i32> {
+  // ScriptHookV doesn't allow for querying the required buffer size.
+  // In the official examples a buffer of 1024 but ScriptHooKV extends multiple pools to a size of 3072.
+  // 4096 is chosen because it's a neat number and leaves some headroom.
+  let mut buffer = [0; 4096];
+  let size = function(buffer.as_mut_ptr(), 4096) as usize;
 
-fn get_all_wrapper(function: unsafe extern "C" fn(arr: *mut i32, arrSize: i32) -> i32) -> Vec<i32> {
-  unsafe {
-    // ScriptHookV doesn't allow for querying the required buffer size.
-    // In the official examples a buffer of 1024 but ScriptHooKV extends multiple pools to a size of 3072.
-    // 4096 is chosen because it's a neat number and leaves some headroom.
-    let mut buffer = [0; 4096];
-    let size = function(buffer.as_mut_ptr(), 4096) as usize;
-
-    buffer.as_slice()[0..size].to_vec()
-  }
+  buffer.as_slice()[0..size].to_vec()
 }
 
 /// Gets all objects present in the world.
@@ -26,7 +25,12 @@ fn get_all_wrapper(function: unsafe extern "C" fn(arr: *mut i32, arrSize: i32) -
 /// }
 /// ```
 pub fn get_all_world_objects() -> Vec<Object> {
-  get_all_wrapper(worldGetAllObjects)
+  get_all_wrapper(|arr, size| unsafe {
+    BACKEND
+      .get()
+      .expect("runtime not set")
+      .get_all_objects(arr, size)
+  })
 }
 
 /// Gets all peds present in the world.
@@ -39,7 +43,12 @@ pub fn get_all_world_objects() -> Vec<Object> {
 /// }
 /// ```
 pub fn get_all_world_peds() -> Vec<Ped> {
-  get_all_wrapper(worldGetAllPeds)
+  get_all_wrapper(|arr, size| unsafe {
+    BACKEND
+      .get()
+      .expect("runtime not set")
+      .get_all_peds(arr, size)
+  })
 }
 
 /// Gets all pickups present in the world.
@@ -52,7 +61,12 @@ pub fn get_all_world_peds() -> Vec<Ped> {
 /// }
 /// ```
 pub fn get_all_world_pickups() -> Vec<Pickup> {
-  get_all_wrapper(worldGetAllPickups)
+  get_all_wrapper(|arr, size| unsafe {
+    BACKEND
+      .get()
+      .expect("runtime not set")
+      .get_all_pickups(arr, size)
+  })
 }
 
 /// Gets all vehicles present in the world.
@@ -65,5 +79,10 @@ pub fn get_all_world_pickups() -> Vec<Pickup> {
 /// }
 /// ```
 pub fn get_all_world_vehicles() -> Vec<Vehicle> {
-  get_all_wrapper(worldGetAllVehicles)
+  get_all_wrapper(|arr, size| unsafe {
+    BACKEND
+      .get()
+      .expect("runtime not set")
+      .get_all_vehicles(arr, size)
+  })
 }

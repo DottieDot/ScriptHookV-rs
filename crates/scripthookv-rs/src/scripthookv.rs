@@ -1,11 +1,15 @@
 use log::{info, warn};
-use shv_bindings::{KeyboardHandler, PresentCallback};
 
 use crate::{
-  get_game_version, memory::ModuleMemoryScanner, memory_database::MemoryDatabase,
+  get_game_version,
+  memory::ModuleMemoryScanner,
+  memory_database::MemoryDatabase,
   register_keyboard_handler, register_present_callback, remove_keyboard_handler,
-  remove_present_callback, remove_script, scripting::ScriptManager, sig_info::SigInfo, GameVersion,
-  ModuleHandle
+  remove_present_callback, remove_script,
+  scripting::ScriptManager,
+  scripting_backend::{KeyboardHandler, PresentCallback, ScriptingBackend, BACKEND},
+  sig_info::SigInfo,
+  GameVersion, ModuleHandle
 };
 
 pub struct ScriptHookV {
@@ -67,6 +71,7 @@ impl ScriptHookV {
 
   #[must_use]
   pub(crate) fn new(
+    backend: Box<dyn ScriptingBackend>,
     module: ModuleHandle,
     startup_scripts_registrars: Vec<fn(&mut ScriptManager)>,
     present_callbacks: Vec<PresentCallback>,
@@ -75,6 +80,8 @@ impl ScriptHookV {
     min_version: Option<GameVersion>,
     max_version: Option<GameVersion>
   ) -> Self {
+    BACKEND.get_or_init(|| backend);
+
     let mut instance = Self {
       module,
       present_callbacks,

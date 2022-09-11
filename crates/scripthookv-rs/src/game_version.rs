@@ -1,4 +1,4 @@
-use shv_bindings::getGameVersion;
+use crate::scripting_backend::BACKEND;
 
 // Taken from https://github.com/E66666666/GTAVManualTransmission/blob/1e3e73070ad293536ea8a2d0c8fea58477830b9d/Gears/Memory/Versions.h
 
@@ -259,5 +259,5 @@ impl TryFrom<i32> for GameVersion {
 /// ```
 #[inline]
 pub fn get_game_version() -> Option<GameVersion> {
-  unsafe { GameVersion::try_from(getGameVersion() as i32).ok() }
+  unsafe { GameVersion::try_from(BACKEND.get().expect("runtime not set").get_game_version()).ok() }
 }

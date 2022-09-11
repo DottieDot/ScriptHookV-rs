@@ -1,8 +1,6 @@
-use std::{ffi::CString, path::Path, time::Duration};
+use std::{path::Path, time::Duration};
 
-use shv_bindings::{createTexture, drawTexture};
-
-use crate::types::Vector2;
+use crate::{scripting_backend::BACKEND, types::Vector2};
 
 /// Used for drawing custom textures.
 pub struct Texture {
@@ -12,17 +10,12 @@ pub struct Texture {
 impl Texture {
   /// Creates a new texture from a file path.
   pub fn create(texture_file: &Path) -> Self {
-    unsafe {
-      let path = CString::new(
-        texture_file
-          .as_os_str()
-          .to_str()
-          .expect("Path includes invalid unicode")
-      )
-      .expect("CString::from failed");
-
-      Self {
-        id: createTexture(path.as_ptr())
+    Self {
+      id: unsafe {
+        BACKEND
+          .get()
+          .expect("runtime not set")
+          .create_texture(texture_file)
       }
     }
   }
@@ -46,7 +39,7 @@ impl Texture {
     a: f32
   ) {
     unsafe {
-      drawTexture(
+      BACKEND.get().expect("runtime not set").draw_texture(
         self.id,
         index,
         level,

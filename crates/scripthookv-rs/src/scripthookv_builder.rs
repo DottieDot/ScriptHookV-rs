@@ -1,10 +1,10 @@
 use log::info;
-use shv_bindings::{KeyboardHandler, PresentCallback};
 
 use crate::{
   builder_plugin::BuilderPlugin,
   memory::{MemoryLocation, Scannable},
   scripting::ScriptManager,
+  scripting_backend::{KeyboardHandler, PresentCallback, ScriptingBackend},
   sig_info::SigInfo,
   GameVersion, ModuleHandle, ScriptHookV
 };
@@ -12,6 +12,7 @@ use crate::{
 pub type ScriptFn = extern "C" fn();
 
 pub struct ScriptHookVBuilder {
+  backend:                   Box<dyn ScriptingBackend>,
   module:                    ModuleHandle,
   startup_script_registrars: Vec<fn(&mut ScriptManager)>,
   present_callbacks:         Vec<PresentCallback>,
@@ -25,8 +26,9 @@ pub struct ScriptHookVBuilder {
 impl ScriptHookVBuilder {
   #[inline]
   #[must_use]
-  pub fn new(module: ModuleHandle) -> Self {
+  pub fn new(module: ModuleHandle, backend: impl ScriptingBackend + 'static) -> Self {
     Self {
+      backend: Box::new(backend),
       module,
       startup_script_registrars: Vec::default(),
       present_callbacks: Vec::default(),
@@ -98,6 +100,7 @@ impl ScriptHookVBuilder {
   #[must_use]
   pub fn build(mut self) -> ScriptHookV {
     let instance = ScriptHookV::new(
+      self.backend,
       self.module,
       self.startup_script_registrars,
       self.present_callbacks,

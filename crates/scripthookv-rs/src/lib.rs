@@ -1,9 +1,5 @@
 use std::ffi::c_void;
 
-use shv_bindings::getGlobalPtr;
-
-pub extern crate shv_bindings;
-
 pub mod call_native;
 pub mod memory;
 pub mod natives;
@@ -17,6 +13,7 @@ mod script;
 mod scripthookv;
 mod scripthookv_builder;
 pub mod scripting;
+mod scripting_backend;
 mod sig_info;
 mod texture;
 mod winapi;
@@ -29,6 +26,7 @@ pub use memory_database::*;
 pub(crate) use script::*;
 pub use scripthookv::*;
 pub use scripthookv_builder::*;
+pub use scripting_backend::*;
 pub use texture::*;
 pub use world::*;
 
@@ -47,7 +45,10 @@ pub type ModuleHandle = *const c_void;
 /// This function will not do any checks in regard to the type and validity of the global. It will interpret whatever is in memory as `T`.
 #[inline]
 pub unsafe fn get_global<T>(global_id: i32) -> &'static mut T {
-  let ptr = getGlobalPtr(global_id);
+  let ptr = scripting_backend::BACKEND
+    .get()
+    .expect("runtime not set")
+    .get_global(global_id);
 
   &mut *(ptr as *mut T)
 }

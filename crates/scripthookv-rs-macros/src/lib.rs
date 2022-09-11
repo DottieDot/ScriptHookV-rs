@@ -29,7 +29,7 @@ pub fn shv_entrypoint(_metadata: TokenStream, item: TokenStream) -> TokenStream 
         loop {
           script_manager.tick();
           unsafe {
-            ::scripthookv::shv_bindings::scriptWait(0);
+            ::scripthookv::BACKEND.get().expect("runtime not set").script_wait(0);
           }
         }
       });
@@ -48,7 +48,7 @@ pub fn shv_entrypoint(_metadata: TokenStream, item: TokenStream) -> TokenStream 
             ::std::sync::Arc::new(::std::sync::Mutex::new(entrypoint(instance)))
           });
           unsafe {
-            ::scripthookv::shv_bindings::scriptRegister(instance, __shv_script_entrypoint);
+            ::scripthookv::BACKEND.get().expect("runtime not set").script_register(instance, __shv_script_entrypoint);
           }
           1
         }

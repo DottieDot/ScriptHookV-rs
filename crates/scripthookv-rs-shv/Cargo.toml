@@ -1,0 +1,12 @@
+[package]
+name = "scripthookv-rs-shv"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "scripthookv_shv"
+path = "src/lib.rs"
+
+[dependencies]
+libscripthookv-sys = { path = "../libscripthookv-sys", version = "0.1.0" }
+scripthookv-rs = { path = "../scripthookv-rs", version = "0.3.0" }

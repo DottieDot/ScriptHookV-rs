@@ -1,6 +1,4 @@
-use shv_bindings::scriptUnregister;
-
-use crate::ModuleHandle;
+use crate::{scripting_backend::BACKEND, ModuleHandle};
 
 /// Removes all script created with the given module instance.
 ///
@@ -10,5 +8,10 @@ use crate::ModuleHandle;
 /// ```
 #[inline]
 pub(crate) fn remove_script(module: ModuleHandle) {
-  unsafe { scriptUnregister(module) }
+  unsafe {
+    BACKEND
+      .get()
+      .expect("runtime not set")
+      .script_unregister(module)
+  }
 }

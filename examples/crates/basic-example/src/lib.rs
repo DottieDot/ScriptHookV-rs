@@ -13,6 +13,7 @@ use scripthookv_gta::{
   },
   ScriptHookVGtaPlugin
 };
+use scripthookv_shv::ScriptHookVBackend;
 use winapi::um::{
   consoleapi::AllocConsole,
   wincon::GetConsoleWindow,
@@ -89,7 +90,7 @@ fn entrypoint(module: ModuleHandle) -> ScriptHookV {
     .map(|_| log::set_max_level(LevelFilter::Trace))
     .unwrap();
 
-  ScriptHookVBuilder::new(module)
+  ScriptHookVBuilder::new(module, ScriptHookVBackend)
     .plugin(ScriptHookVGtaPlugin)
     .startup_script_registrar(|mgr| {
       mgr.add_script(MyScript);
