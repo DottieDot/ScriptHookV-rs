@@ -1,3 +1,5 @@
+#![feature(arbitrary_enum_discriminant)]
+
 use std::ffi::c_void;
 
 pub mod call_native;

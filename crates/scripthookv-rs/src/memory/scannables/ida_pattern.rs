@@ -33,7 +33,11 @@ impl IdaPattern {
         bytes.push(0x00);
       } else {
         mask.push('x');
-        let byte = u8::from_str_radix(byte_string, 16).map_err(|_| InvalidIdaPatternError {})?;
+        let byte = u8::from_str_radix(byte_string, 16).map_err(|_| {
+          InvalidIdaPatternError {
+            pattern: pattern.into()
+          }
+        })?;
         bytes.push(byte);
       }
     }
@@ -43,5 +47,7 @@ impl IdaPattern {
 }
 
 #[derive(Debug, Error)]
-#[error("the provided pattern is malformed")]
-pub struct InvalidIdaPatternError {}
+#[error("The IDA pattern \"{pattern}\" is malformed")]
+pub struct InvalidIdaPatternError {
+  pattern: String
+}

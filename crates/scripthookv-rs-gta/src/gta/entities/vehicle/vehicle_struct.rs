@@ -3,7 +3,6 @@ use std::time::Duration;
 
 use crate::natives::*;
 use scripthookv::types::{Bool, Vector3, Vehicle as NativeVehicle};
-use scripthookv::{get_game_version, GameVersion};
 
 use crate::gta::{
   entities::{Entity, VehicleDoors},
@@ -156,12 +155,7 @@ impl Vehicle {
   #[inline]
   #[must_use]
   pub fn can_jump(&self) -> bool {
-    match get_game_version() {
-      Some(version) if version >= GameVersion::Build_944_2_Steam => unsafe {
-        vehicle::_get_can_vehicle_jump(self.handle)
-      },
-      _ => false
-    }
+    unsafe { vehicle::_get_can_vehicle_jump(self.handle) }
   }
 
   #[inline]

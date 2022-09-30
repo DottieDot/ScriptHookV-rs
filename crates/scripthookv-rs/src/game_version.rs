@@ -1,10 +1,13 @@
+use num_enum::FromPrimitive;
+
 use crate::scripting_backend::BACKEND;
 
 // Taken from https://github.com/E66666666/GTAVManualTransmission/blob/1e3e73070ad293536ea8a2d0c8fea58477830b9d/Gears/Memory/Versions.h
 
 /// Used for identifying game versions.
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, FromPrimitive)]
+#[repr(i32)]
 pub enum GameVersion {
   Build_335_2_Steam     = 0,
   Build_335_2_NotSteam  = 1,
@@ -114,150 +117,30 @@ pub enum GameVersion {
   Build_2372_0_NotSteam = 70,
 
   Build_2545_0_Steam    = 71,
-  Build_2545_0_NotSteam = 72
+  Build_2545_0_NotSteam = 72,
+
+  #[num_enum(catch_all)]
+  Unknown(i32)
 }
 
-#[derive(Debug, Clone)]
-pub struct TryFromIntError {
-  value: i32
-}
-
-impl std::fmt::Display for TryFromIntError {
-  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-    write!(f, "{} is not a known game version", self.value)
-  }
-}
-
-impl TryFrom<i32> for GameVersion {
-  type Error = TryFromIntError;
-
-  fn try_from(value: i32) -> Result<Self, Self::Error> {
-    match value {
-      x if x == GameVersion::Build_335_2_Steam as i32 => Ok(GameVersion::Build_335_2_Steam),
-      x if x == GameVersion::Build_335_2_NotSteam as i32 => Ok(GameVersion::Build_335_2_NotSteam),
-
-      x if x == GameVersion::Build_350_1_Steam as i32 => Ok(GameVersion::Build_350_1_Steam),
-      x if x == GameVersion::Build_350_2_NotSteam as i32 => Ok(GameVersion::Build_350_2_NotSteam),
-
-      x if x == GameVersion::Build_372_2_Steam as i32 => Ok(GameVersion::Build_372_2_Steam),
-      x if x == GameVersion::Build_372_2_NotSteam as i32 => Ok(GameVersion::Build_372_2_NotSteam),
-
-      x if x == GameVersion::Build_393_2_Steam as i32 => Ok(GameVersion::Build_393_2_Steam),
-      x if x == GameVersion::Build_393_2_NotSteam as i32 => Ok(GameVersion::Build_393_2_NotSteam),
-
-      x if x == GameVersion::Build_393_4_Steam as i32 => Ok(GameVersion::Build_393_4_Steam),
-      x if x == GameVersion::Build_393_4_NotSteam as i32 => Ok(GameVersion::Build_393_4_NotSteam),
-
-      x if x == GameVersion::Build_463_1_Steam as i32 => Ok(GameVersion::Build_463_1_Steam),
-      x if x == GameVersion::Build_463_1_NotSteam as i32 => Ok(GameVersion::Build_463_1_NotSteam),
-
-      x if x == GameVersion::Build_505_2_Steam as i32 => Ok(GameVersion::Build_505_2_Steam),
-      x if x == GameVersion::Build_505_2_NotSteam as i32 => Ok(GameVersion::Build_505_2_NotSteam),
-
-      x if x == GameVersion::Build_573_1_Steam as i32 => Ok(GameVersion::Build_573_1_Steam),
-      x if x == GameVersion::Build_573_1_NotSteam as i32 => Ok(GameVersion::Build_573_1_NotSteam),
-
-      x if x == GameVersion::Build_617_1_Steam as i32 => Ok(GameVersion::Build_617_1_Steam),
-      x if x == GameVersion::Build_617_1_NotSteam as i32 => Ok(GameVersion::Build_617_1_NotSteam),
-
-      x if x == GameVersion::Build_678_1_Steam as i32 => Ok(GameVersion::Build_678_1_Steam),
-      x if x == GameVersion::Build_678_1_NotSteam as i32 => Ok(GameVersion::Build_678_1_NotSteam),
-
-      x if x == GameVersion::Build_757_2_Steam as i32 => Ok(GameVersion::Build_757_2_Steam),
-      x if x == GameVersion::Build_757_2_NotSteam as i32 => Ok(GameVersion::Build_757_2_NotSteam),
-
-      x if x == GameVersion::Build_757_4_Steam as i32 => Ok(GameVersion::Build_757_4_Steam),
-      x if x == GameVersion::Build_757_4_NotSteam as i32 => Ok(GameVersion::Build_757_4_NotSteam),
-
-      x if x == GameVersion::Build_791_2_Steam as i32 => Ok(GameVersion::Build_791_2_Steam),
-      x if x == GameVersion::Build_791_2_NotSteam as i32 => Ok(GameVersion::Build_791_2_NotSteam),
-
-      x if x == GameVersion::Build_877_1_Steam as i32 => Ok(GameVersion::Build_877_1_Steam),
-      x if x == GameVersion::Build_877_1_NotSteam as i32 => Ok(GameVersion::Build_877_1_NotSteam),
-
-      x if x == GameVersion::Build_944_2_Steam as i32 => Ok(GameVersion::Build_944_2_Steam),
-      x if x == GameVersion::Build_944_2_NotSteam as i32 => Ok(GameVersion::Build_944_2_NotSteam),
-
-      x if x == GameVersion::Build_1011_1_Steam as i32 => Ok(GameVersion::Build_1011_1_Steam),
-      x if x == GameVersion::Build_1011_1_NotSteam as i32 => Ok(GameVersion::Build_1011_1_NotSteam),
-
-      x if x == GameVersion::Build_1032_1_Steam as i32 => Ok(GameVersion::Build_1032_1_Steam),
-      x if x == GameVersion::Build_1032_1_NotSteam as i32 => Ok(GameVersion::Build_1032_1_NotSteam),
-
-      x if x == GameVersion::Build_1103_2_Steam as i32 => Ok(GameVersion::Build_1103_2_Steam),
-      x if x == GameVersion::Build_1103_2_NotSteam as i32 => Ok(GameVersion::Build_1103_2_NotSteam),
-
-      x if x == GameVersion::Build_1180_2_Steam as i32 => Ok(GameVersion::Build_1180_2_Steam),
-      x if x == GameVersion::Build_1180_2_NotSteam as i32 => Ok(GameVersion::Build_1180_2_NotSteam),
-
-      x if x == GameVersion::Build_1290_1_Steam as i32 => Ok(GameVersion::Build_1290_1_Steam),
-      x if x == GameVersion::Build_1290_1_NotSteam as i32 => Ok(GameVersion::Build_1290_1_NotSteam),
-
-      x if x == GameVersion::Build_1365_1_Steam as i32 => Ok(GameVersion::Build_1365_1_Steam),
-      x if x == GameVersion::Build_1365_1_NotSteam as i32 => Ok(GameVersion::Build_1365_1_NotSteam),
-
-      x if x == GameVersion::Build_1493_0_Steam as i32 => Ok(GameVersion::Build_1493_0_Steam),
-      x if x == GameVersion::Build_1493_0_NotSteam as i32 => Ok(GameVersion::Build_1493_0_NotSteam),
-
-      x if x == GameVersion::Build_1493_1_Steam as i32 => Ok(GameVersion::Build_1493_1_Steam),
-      x if x == GameVersion::Build_1493_1_NotSteam as i32 => Ok(GameVersion::Build_1493_1_NotSteam),
-
-      x if x == GameVersion::Build_1604_0_Steam as i32 => Ok(GameVersion::Build_1604_0_Steam),
-      x if x == GameVersion::Build_1604_0_NotSteam as i32 => Ok(GameVersion::Build_1604_0_NotSteam),
-
-      x if x == GameVersion::Build_1604_1_Steam as i32 => Ok(GameVersion::Build_1604_1_Steam),
-      x if x == GameVersion::Build_1604_1_NotSteam as i32 => Ok(GameVersion::Build_1604_1_NotSteam),
-
-      x if x == GameVersion::Build_1737_0_Steam as i32 => Ok(GameVersion::Build_1737_0_Steam),
-      x if x == GameVersion::Build_1737_0_NotSteam as i32 => Ok(GameVersion::Build_1737_0_NotSteam),
-
-      x if x == GameVersion::Build_1737_6_Steam as i32 => Ok(GameVersion::Build_1737_6_Steam),
-      x if x == GameVersion::Build_1737_6_NotSteam as i32 => Ok(GameVersion::Build_1737_6_NotSteam),
-
-      x if x == GameVersion::Build_1868_0_Steam as i32 => Ok(GameVersion::Build_1868_0_Steam),
-      x if x == GameVersion::Build_1868_0_NotSteam as i32 => Ok(GameVersion::Build_1868_0_NotSteam),
-
-      x if x == GameVersion::Build_1868_1_Steam as i32 => Ok(GameVersion::Build_1868_1_Steam),
-      x if x == GameVersion::Build_1868_1_NotSteam as i32 => Ok(GameVersion::Build_1868_1_NotSteam),
-
-      x if x == GameVersion::Build_1868_4_EGS as i32 => Ok(GameVersion::Build_1868_4_EGS),
-
-      x if x == GameVersion::Build_2060_0_Steam as i32 => Ok(GameVersion::Build_2060_0_Steam),
-      x if x == GameVersion::Build_2060_0_NotSteam as i32 => Ok(GameVersion::Build_2060_0_NotSteam),
-
-      x if x == GameVersion::Build_2060_1_Steam as i32 => Ok(GameVersion::Build_2060_1_Steam),
-      x if x == GameVersion::Build_2060_1_NotSteam as i32 => Ok(GameVersion::Build_2060_1_NotSteam),
-
-      x if x == GameVersion::Build_2189_0_Steam as i32 => Ok(GameVersion::Build_2189_0_Steam),
-      x if x == GameVersion::Build_2189_0_NotSteam as i32 => Ok(GameVersion::Build_2189_0_NotSteam),
-
-      x if x == GameVersion::Build_2215_0_Steam as i32 => Ok(GameVersion::Build_2215_0_Steam),
-      x if x == GameVersion::Build_2215_0_NotSteam as i32 => Ok(GameVersion::Build_2215_0_NotSteam),
-
-      x if x == GameVersion::Build_2245_0_Steam as i32 => Ok(GameVersion::Build_2245_0_Steam),
-      x if x == GameVersion::Build_2245_0_NotSteam as i32 => Ok(GameVersion::Build_2245_0_NotSteam),
-
-      x if x == GameVersion::Build_2372_0_Steam as i32 => Ok(GameVersion::Build_2372_0_Steam),
-      x if x == GameVersion::Build_2372_0_NotSteam as i32 => Ok(GameVersion::Build_2372_0_NotSteam),
-
-      x if x == GameVersion::Build_2545_0_Steam as i32 => Ok(GameVersion::Build_2545_0_Steam),
-      x if x == GameVersion::Build_2545_0_NotSteam as i32 => Ok(GameVersion::Build_2545_0_NotSteam),
-
-      _ => Err(TryFromIntError { value })
-    }
+impl GameVersion {
+  /// Checks if the game version isn't unknown
+  #[inline]
+  #[must_use]
+  pub fn known(&self) -> bool {
+    !matches!(self, Self::Unknown(_))
   }
 }
 
 /// Returns the current game version.
 ///
-/// Returns an error if the version returned by ScriptHookV isn't recognized.
-///
 /// ```
-/// if get_game_version().unwrap() == GameVersion::Build_335_2_Steam {
+/// if get_game_version() == GameVersion::Build_335_2_Steam {
 ///   /* do something specific for Build_335_2_Steam */
 /// }
 /// ```
 #[inline]
-pub fn get_game_version() -> Option<GameVersion> {
-  unsafe { GameVersion::try_from(BACKEND.get().expect("runtime not set").get_game_version()).ok() }
+#[must_use]
+pub fn get_game_version() -> GameVersion {
+  unsafe { GameVersion::from(BACKEND.get().expect("runtime not set").get_game_version()) }
 }

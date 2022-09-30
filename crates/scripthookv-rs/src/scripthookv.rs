@@ -31,13 +31,15 @@ impl ScriptHookV {
       self.max_version
     );
     match (get_game_version(), self.min_version, self.max_version) {
-      (Some(version), Some(min_version), _) if version < min_version => {
+      (GameVersion::Unknown(_), _, Some(_)) | (GameVersion::Unknown(_), Some(_), _) => {
+        panic!("Unknown game version")
+      }
+      (version, Some(min_version), _) if version < min_version => {
         panic!("Game version is too old")
       }
-      (Some(version), _, Some(min_version)) if version < min_version => {
+      (version, _, Some(min_version)) if version < min_version => {
         panic!("Game version is not supported")
       }
-      (None, _, Some(_)) | (None, Some(_), _) => panic!("Unknown game version"),
       _ => ()
     }
 
