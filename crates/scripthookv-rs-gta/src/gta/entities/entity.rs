@@ -205,8 +205,8 @@ pub trait Entity {
   /// Tends to be more accurate than `Entity::heading` especially when a ped is in ragdoll.
   #[inline]
   #[must_use]
-  fn physics_heading(&self) -> f32 {
-    unsafe { entity::_get_entity_physics_heading(self.handle()) }
+  fn euler_heading(&self) -> f32 {
+    unsafe { entity::get_entity_heading_from_eulers(self.handle()) }
   }
 
   /// Gets how far the entity is submerged

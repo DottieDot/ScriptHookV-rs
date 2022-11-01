@@ -14,6 +14,11 @@ pub struct Cam {
 
 impl Cam {
   #[inline]
+  pub fn set_cinematic_button_active(toggle: bool) {
+    unsafe { cam::set_cinematic_button_active(toggle) }
+  }
+
+  #[inline]
   pub fn create(
     name: &str,
     position: Vector3,

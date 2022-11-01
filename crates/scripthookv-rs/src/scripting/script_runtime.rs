@@ -1,11 +1,11 @@
 use std::{
-  sync::{Arc, Mutex, RwLock},
+  sync::{Arc, RwLock},
   task::Poll,
   time::{Duration, Instant}
 };
 
 use super::{Script, ScriptCommands, ScriptFuture, ScriptManagerDelegate, ScriptStatus};
-use smol::LocalExecutor;
+use smol::{lock::Mutex, LocalExecutor};
 
 pub struct ScriptRuntime<'rt> {
   executor:       Arc<LocalExecutor<'rt>>,
@@ -35,7 +35,7 @@ impl<'rt> ScriptRuntime<'rt> {
     self
       .executor
       .spawn(async move {
-        let mut locked_script = script.lock().unwrap();
+        let mut locked_script = script.lock().await;
 
         loop {
           if locked_script.should_stop() {

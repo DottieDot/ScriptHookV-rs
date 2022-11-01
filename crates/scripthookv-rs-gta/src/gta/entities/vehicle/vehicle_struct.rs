@@ -100,14 +100,14 @@ impl Vehicle {
   }
 
   #[inline]
-  pub fn stop_bring_to_halt(&self) {
-    unsafe { vehicle::_stop_bring_vehicle_to_halt(self.handle) }
+  pub fn stop_bringing_to_halt(&self) {
+    unsafe { vehicle::stop_bringing_vehicle_to_halt(self.handle) }
   }
 
   #[inline]
   #[must_use]
-  pub fn is_being_halted(&self) -> bool {
-    unsafe { vehicle::_is_vehicle_being_halted(self.handle) }
+  pub fn is_being_brought_to_halt(&self) -> bool {
+    unsafe { vehicle::is_vehicle_being_brought_to_halt(self.handle) }
   }
 
   #[inline]
@@ -155,7 +155,7 @@ impl Vehicle {
   #[inline]
   #[must_use]
   pub fn can_jump(&self) -> bool {
-    unsafe { vehicle::_get_can_vehicle_jump(self.handle) }
+    unsafe { vehicle::get_car_has_jump(self.handle) }
   }
 
   #[inline]
@@ -270,7 +270,7 @@ impl Vehicle {
 
   #[inline]
   pub fn turn_off_neon_lights(&self, toggle: bool) {
-    unsafe { vehicle::_disable_vehicle_neon_lights(self.handle(), toggle) }
+    unsafe { vehicle::suppress_neons_on_vehicle(self.handle(), toggle) }
   }
 
   #[inline]

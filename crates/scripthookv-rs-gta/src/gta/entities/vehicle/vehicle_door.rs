@@ -52,7 +52,7 @@ impl VehicleDoor {
 
   #[inline]
   pub fn set_can_break(&self, toggle: bool) {
-    unsafe { vehicle::_set_vehicle_door_can_break(self.vehicle.into(), self.door.into(), toggle) }
+    unsafe { vehicle::set_door_allowed_to_be_broken_off(self.vehicle.into(), self.door.into(), toggle) }
   }
 
   #[inline]

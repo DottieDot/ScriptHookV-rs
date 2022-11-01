@@ -83,7 +83,7 @@ impl VehicleModType {
         self.vehicle.into(),
         self.mod_type.into(),
         mod_id,
-        self.get_variation()
+        self.get_variation() == 1
       )
     }
   }
@@ -120,7 +120,7 @@ impl VehicleModType {
   /// Only used for wheels and returns `true` for custom tires.
   #[inline]
   #[must_use]
-  pub fn get_variation(&self) -> bool {
+  pub fn get_variation(&self) -> i32 {
     unsafe { vehicle::get_vehicle_mod_variation(self.vehicle.into(), self.mod_type.into()) }
   }
 }

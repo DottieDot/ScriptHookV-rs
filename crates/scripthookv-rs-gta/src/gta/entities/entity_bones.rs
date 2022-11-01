@@ -19,7 +19,7 @@ impl EntityBones {
   #[inline]
   #[must_use]
   pub fn bone_count(&self) -> i32 {
-    unsafe { entity::_get_entity_bone_count(self.entity_handle) }
+    unsafe { entity::get_entity_bone_count(self.entity_handle) }
   }
 
   #[inline]

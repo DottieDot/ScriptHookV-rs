@@ -103,12 +103,12 @@ impl VehicleModManager {
   #[inline]
   #[must_use]
   pub fn neon_light_enabled(&self, neon: VehicleNeonLights) -> bool {
-    unsafe { vehicle::_is_vehicle_neon_light_enabled(self.vehicle.into(), neon as i32) }
+    unsafe { vehicle::get_vehicle_neon_enabled(self.vehicle.into(), neon as i32) }
   }
 
   #[inline]
   pub fn enable_neon_light(&self, neon: VehicleNeonLights, toggle: bool) {
-    unsafe { vehicle::_set_vehicle_neon_light_enabled(self.vehicle.into(), neon as i32, toggle) }
+    unsafe { vehicle::set_vehicle_neon_enabled(self.vehicle.into(), neon as i32, toggle) }
   }
 }
 

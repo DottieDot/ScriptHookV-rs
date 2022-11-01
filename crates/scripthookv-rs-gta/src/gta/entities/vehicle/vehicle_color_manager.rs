@@ -81,7 +81,7 @@ impl VehicleColorManager {
   pub fn neon_lights_color(&self) -> Color {
     let mut rgb_buffer = (0, 0, 0);
     unsafe {
-      vehicle::_get_vehicle_neon_lights_colour(
+      vehicle::get_vehicle_neon_colour(
         self.vehicle.into(),
         &mut rgb_buffer.0,
         &mut rgb_buffer.1,
@@ -95,7 +95,7 @@ impl VehicleColorManager {
   pub fn set_neon_lights_color(&self, color: Color) {
     let rgb: RGB = color.into();
     unsafe {
-      vehicle::_set_vehicle_neon_lights_colour(
+      vehicle::set_vehicle_neon_colour(
         self.vehicle.into(),
         rgb.r.into(),
         rgb.g.into(),
@@ -107,12 +107,12 @@ impl VehicleColorManager {
   #[inline]
   #[must_use]
   pub fn xenon_lights_color(&self) -> i32 {
-    unsafe { vehicle::_get_vehicle_xenon_lights_color(self.vehicle.into()) }
+    unsafe { vehicle::get_vehicle_xenon_light_color_index(self.vehicle.into()) }
   }
 
   #[inline]
   pub fn set_xenon_lights_color(&self, color: i32) {
-    unsafe { vehicle::_set_vehicle_xenon_lights_color(self.vehicle.into(), color) }
+    unsafe { vehicle::set_vehicle_xenon_light_color_index(self.vehicle.into(), color) }
   }
 
   #[inline]
@@ -149,26 +149,26 @@ impl VehicleColorManager {
   #[must_use]
   pub fn interior_color(&self) -> i32 {
     let mut color = 0;
-    unsafe { vehicle::_get_vehicle_interior_color(self.vehicle.into(), &mut color) }
+    unsafe { vehicle::get_vehicle_extra_colour_5(self.vehicle.into(), &mut color) }
     color
   }
 
   #[inline]
   pub fn set_interior_color(&self, color: i32) {
-    unsafe { vehicle::_set_vehicle_interior_color(self.vehicle.into(), color) }
+    unsafe { vehicle::set_vehicle_extra_colour_5(self.vehicle.into(), color) }
   }
 
   #[inline]
   #[must_use]
   pub fn dashboard_color(&self) -> i32 {
     let mut color = 0;
-    unsafe { vehicle::_get_vehicle_dashboard_color(self.vehicle.into(), &mut color) }
+    unsafe { vehicle::get_vehicle_extra_colour_6(self.vehicle.into(), &mut color) }
     color
   }
 
   #[inline]
   pub fn set_dashboard_color(&self, color: i32) {
-    unsafe { vehicle::_set_vehicle_dashboard_color(self.vehicle.into(), color) }
+    unsafe { vehicle::set_vehicle_extra_colour_6(self.vehicle.into(), color) }
   }
 
   #[inline]

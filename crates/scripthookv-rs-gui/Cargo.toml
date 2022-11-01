@@ -8,3 +8,4 @@ name = "scripthookv_gui"
 path = "src/lib.rs"
 
 [dependencies]
+scripthookv-rs-gta = { path = "../scripthookv-rs-gta" }

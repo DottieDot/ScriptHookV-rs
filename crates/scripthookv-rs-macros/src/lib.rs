@@ -38,9 +38,9 @@ pub fn shv_entrypoint(_metadata: TokenStream, item: TokenStream) -> TokenStream 
     #[no_mangle]
     #[allow(non_snake_case)]
     pub extern "stdcall" fn DllMain(
-      instance: scripthookv::ModuleHandle,
+      instance: ::scripthookv::ModuleHandle,
       reason: u32,
-      _reserved: *const std::ffi::c_void
+      _reserved: *const ::std::ffi::c_void
     ) -> i32 {
       match reason {
         1 /* DLL_PROCESS_ATTACH */ => {

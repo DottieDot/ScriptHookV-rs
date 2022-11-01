@@ -1,7 +1,6 @@
 #![feature(arbitrary_enum_discriminant)]
 
-mod natives;
-
+pub mod natives;
 pub mod color;
 pub mod five;
 pub mod gta;
