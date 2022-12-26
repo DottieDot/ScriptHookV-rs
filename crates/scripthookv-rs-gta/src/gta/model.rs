@@ -1,7 +1,4 @@
-use std::{
-  task::Poll,
-  time::{Duration, Instant}
-};
+use std::task::Poll;
 
 use scripthookv::{scripting::ScriptFuture, types::Hash};
 
@@ -35,24 +32,17 @@ impl Model {
     unsafe { streaming::has_model_loaded(self.hash) }
   }
 
-  pub async fn load_with_timeout_async(&self, timeout: Duration) -> Result<(), ()> {
-    let stop_at = Instant::now() + timeout;
-
+  /// Loads the model asynchronously
+  pub async fn load(&self) {
     self.request();
     ScriptFuture::new(move || {
-      if Instant::now() >= stop_at {
-        Poll::Ready(Err(()))
-      } else if !self.loaded() {
+      if !self.loaded() {
         Poll::Pending
       } else {
-        Poll::Ready(Ok(()))
+        Poll::Ready(())
       }
     })
     .await
-  }
-
-  pub async fn load_async(&self) -> Result<(), ()> {
-    self.load_with_timeout_async(Duration::from_secs(1)).await
   }
 
   /// Checks if the model is a vehicle.
@@ -67,6 +57,13 @@ impl Model {
   #[must_use]
   pub fn is_ped(&self) -> bool {
     unsafe { streaming::is_model_a_ped(self.hash) }
+  }
+
+  /// Checks if the model is valid
+  #[inline]
+  #[must_use]
+  pub fn is_valid(&self) -> bool {
+    unsafe { streaming::is_model_valid(self.hash) }
   }
 }
 

@@ -1,4 +1,5 @@
 pub mod gui;
+pub mod rendering;
 
 mod event_emitter;
 

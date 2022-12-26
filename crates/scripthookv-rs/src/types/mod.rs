@@ -41,8 +41,10 @@ pub struct Vector4 {
   _pad0x18: u32
 }
 
+mod matrix;
 mod vector2;
 mod vector3;
 
+pub use matrix::*;
 pub use vector2::*;
 pub use vector3::*;

@@ -1,5 +1,3 @@
-#![feature(arbitrary_enum_discriminant)]
-
 use std::ffi::c_void;
 
 pub mod call_native;
@@ -18,6 +16,7 @@ pub mod scripting;
 mod scripting_backend;
 mod sig_info;
 mod texture;
+mod timeout;
 mod winapi;
 mod world;
 
@@ -30,6 +29,7 @@ pub use scripthookv::*;
 pub use scripthookv_builder::*;
 pub use scripting_backend::*;
 pub use texture::*;
+pub use timeout::*;
 pub use world::*;
 
 pub use scripthookv_rs_macros::*;

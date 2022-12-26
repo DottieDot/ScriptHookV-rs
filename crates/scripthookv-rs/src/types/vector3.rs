@@ -42,13 +42,13 @@ impl Vector3 {
 
   /// Gets the length of the vector.
   #[must_use]
-  pub fn length(&self) -> f32 {
+  pub fn length(self) -> f32 {
     (self.x.powf(2f32) + self.y.powf(2f32) + self.z.powf(2f32)).sqrt()
   }
 
   /// Creates a normalized copy of the vector.
   #[must_use]
-  pub fn normalized(&self) -> Self {
+  pub fn normalized(self) -> Self {
     let length = self.length();
     if length == 0f32 {
       return Vector3::zero();
@@ -65,15 +65,15 @@ impl Vector3 {
   /// Gets the distance to another vector.
   #[inline]
   #[must_use]
-  pub fn distance_to(&self, to: &Vector3) -> f32 {
-    (*to - *self).length()
+  pub fn distance_to(self, to: Vector3) -> f32 {
+    (to - self).length()
   }
 
   /// Gets the distance to another vector ignoring the z coordinate.
   #[inline]
   #[must_use]
-  pub fn distance_to_2d(&self, to: &Vector3) -> f32 {
-    let mut tmp = *to - *self;
+  pub fn distance_to_2d(self, to: Vector3) -> f32 {
+    let mut tmp = to - self;
     tmp.z = 0f32;
     tmp.length()
   }
@@ -81,8 +81,19 @@ impl Vector3 {
   /// Gets the dot product with another vector.
   #[inline]
   #[must_use]
-  pub fn dot(&self, rhs: &Vector3) -> f32 {
+  pub fn dot(self, rhs: Vector3) -> f32 {
     self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+  }
+
+  /// Gets the cross product with another vector
+  #[inline]
+  #[must_use]
+  pub fn cross(self, rhs: Vector3) -> Vector3 {
+    Vector3::new(
+      (self.y * rhs.z) - (self.z * rhs.y),
+      (self.z * rhs.x) - (self.x * rhs.z),
+      (self.x * rhs.y) - (self.y * rhs.x)
+    )
   }
 }
 

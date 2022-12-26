@@ -139,4 +139,18 @@ impl SubmenuEntries {
   pub fn is_empty(&self) -> bool {
     self.entries.is_empty()
   }
+
+  pub fn get_range(&self, range: Range<usize>) -> Vec<Ref<dyn MenuEntry>> {
+    self.entries[range]
+      .iter()
+      .map(|e| e.borrow())
+      .collect::<Vec<_>>()
+  }
+
+  pub fn get_range_mut(&self, range: Range<usize>) -> Vec<RefMut<dyn MenuEntry>> {
+    self.entries[range]
+      .iter()
+      .map(|e| e.borrow_mut())
+      .collect::<Vec<_>>()
+  }
 }

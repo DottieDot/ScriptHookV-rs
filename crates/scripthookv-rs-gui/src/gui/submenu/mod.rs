@@ -5,10 +5,13 @@ use std::{
 
 use crate::{gui::MenuEntry, EventEmitter};
 
-use self::{submenu_entries::SubmenuEntries, submenu_selection::SubmenuSelection};
+use super::{renderer::MenuRenderer, MenuControls};
 
 mod submenu_entries;
 mod submenu_selection;
+
+pub use submenu_entries::*;
+pub use submenu_selection::*;
 
 pub struct Submenu {
   title:         String,
@@ -52,7 +55,7 @@ impl Submenu {
     todo!()
   }
 
-  pub(crate) fn menu_closed(&mut self)  {
+  pub(crate) fn menu_closed(&mut self) {
     todo!()
   }
 
@@ -60,12 +63,30 @@ impl Submenu {
     todo!()
   }
 
+  pub(crate) fn process(&mut self, controls: &MenuControls, renderer: &dyn MenuRenderer) {
+    let visible_entries = renderer
+      .submenu_renderer()
+      .get_visible_entries_mut(&self.selection, &self.entries);
+
+    for mut entry in visible_entries {
+      entry.process(controls)
+    }
+  }
+
   pub fn set_title(&mut self, title: String) {
     self.title = title
   }
 
+  pub fn title(&self) -> &String {
+    &self.title
+  }
+
   pub fn set_subtitle(&mut self, subtitle: String) {
     self.subtitle = subtitle
+  }
+
+  pub fn subtitle(&self) -> &String {
+    &self.subtitle
   }
 
   pub fn entries_mut(&mut self) -> &mut SubmenuEntries {
@@ -136,5 +157,13 @@ impl Submenu {
     self
       .selection
       .update_for_removed_entries(&removed_entries, &self.entries)
+  }
+
+  pub fn selection(&self) -> &SubmenuSelection {
+    &self.selection
+  }
+
+  pub fn entries(&self) -> &SubmenuEntries {
+    &self.entries
   }
 }

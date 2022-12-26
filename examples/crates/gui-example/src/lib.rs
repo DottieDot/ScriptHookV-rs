@@ -1,4 +1,4 @@
-use std::{sync::Arc, thread, time::Duration};
+use std::{cell::RefCell, sync::Arc, thread, time::Duration};
 
 use async_trait::async_trait;
 use log::{info, LevelFilter, Metadata, Record};
@@ -13,6 +13,7 @@ use scripthookv_gta::{
   },
   ScriptHookVGtaPlugin
 };
+use scripthookv_gui::gui::{options::MenuOption, Menu, MenuEntry, Submenu};
 use scripthookv_shv::ScriptHookVBackend;
 use winapi::um::{
   consoleapi::AllocConsole,
@@ -20,11 +21,23 @@ use winapi::um::{
   winuser::{ShowWindow, SW_SHOW}
 };
 
-struct MyScript;
+struct MyScript {
+  gui: Option<Menu>
+}
 
 #[async_trait(?Send)]
 impl<'rt> Script<'rt> for MyScript {
-  async fn start(&mut self, _commands: Arc<ScriptCommands<'rt>>) {}
+  async fn start(&mut self, _commands: Arc<ScriptCommands<'rt>>) {
+    let main_submenu = Submenu::new("Test", "Main Menu", |sub| {
+      sub.add_multiple(
+        (0..50)
+          .map(|_| Box::<RefCell<dyn MenuEntry>>::new(RefCell::new(MenuOption::new())))
+          .collect::<Vec<_>>()
+      );
+    });
+
+    // self.gui = Some(Menu::new())
+  }
 
   async fn update(&mut self, commands: Arc<ScriptCommands<'rt>>) {
     if misc::has_cheat_code_just_been_entered("test") {

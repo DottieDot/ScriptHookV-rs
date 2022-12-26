@@ -1,7 +1,7 @@
 use std::{
   fmt::Display,
-  ops::Sub,
-  ops::{Add, Mul}
+  ops::{Add, Mul},
+  ops::{Div, Sub}
 };
 
 /// A vector2 representation that can be used with natives.
@@ -38,13 +38,13 @@ impl Vector2 {
 
   /// Gets the length of the vector.
   #[must_use]
-  pub fn length(&self) -> f32 {
+  pub fn length(self) -> f32 {
     (self.x.powf(2f32) + self.y.powf(2f32)).sqrt()
   }
 
   /// Creates a normalized copy of the vector.
   #[must_use]
-  pub fn normalized(&self) -> Self {
+  pub fn normalized(self) -> Self {
     let length = self.length();
     if length == 0f32 {
       return Vector2::zero();
@@ -57,14 +57,14 @@ impl Vector2 {
   /// Gets the distance to another vector.
   #[inline]
   #[must_use]
-  pub fn distance_to(&self, to: &Vector2) -> f32 {
-    (*to - *self).length()
+  pub fn distance_to(self, to: Vector2) -> f32 {
+    (to - self).length()
   }
 
   /// Gets the dot product with another vector.
   #[inline]
   #[must_use]
-  pub fn dot(&self, rhs: &Vector2) -> f32 {
+  pub fn dot(self, rhs: Vector2) -> f32 {
     self.x * rhs.x + self.y * rhs.y
   }
 }
@@ -102,6 +102,22 @@ impl Mul<f32> for Vector2 {
   #[must_use]
   fn mul(self, rhs: f32) -> Self::Output {
     Vector2::new(self.x * rhs, self.y * rhs)
+  }
+}
+
+impl Div<f32> for Vector2 {
+  type Output = Vector2;
+
+  fn div(self, rhs: f32) -> Self::Output {
+    Vector2::new(self.x / rhs, self.y / rhs)
+  }
+}
+
+impl Div<Vector2> for Vector2 {
+  type Output = Vector2;
+
+  fn div(self, rhs: Vector2) -> Self::Output {
+    Vector2::new(self.x / rhs.x, self.y / rhs.y)
   }
 }
 

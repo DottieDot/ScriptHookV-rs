@@ -151,6 +151,10 @@ impl SubmenuSelection {
     }
   }
 
+  pub fn selected_index(&self) -> Option<usize> {
+    self.selected_index
+  }
+
   fn set_selected(&mut self, index: usize, entries: &SubmenuEntries) {
     if let Some(selected) = self.selected_index {
       entries.get_mut(selected).unwrap().on_blur();

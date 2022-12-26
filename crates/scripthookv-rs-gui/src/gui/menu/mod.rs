@@ -3,7 +3,7 @@ mod menu_history;
 
 pub use menu_control::*;
 
-use std::{cell::RefCell, sync::Arc, time::Duration};
+use std::{borrow::Borrow, cell::RefCell, sync::Arc, time::Duration};
 
 use scripthookv_gta::gta::{
   hud,
@@ -13,20 +13,26 @@ use scripthookv_gta::gta::{
 
 use self::menu_history::MenuHistory;
 
-use super::Submenu;
+use super::{renderer::MenuRenderer, Submenu};
 
 pub struct Menu {
   open:     bool,
   controls: MenuControls,
-  history:  MenuHistory
+  history:  MenuHistory,
+  renderer: Box<dyn MenuRenderer>
 }
 
 impl Menu {
-  pub fn new(controls: MenuControls, main_submenu: Arc<RefCell<Submenu>>) -> Self {
+  pub fn new(
+    controls: MenuControls,
+    main_submenu: Arc<RefCell<Submenu>>,
+    renderer: impl Into<Box<dyn MenuRenderer>>
+  ) -> Self {
     Self {
       open: true,
       controls,
-      history: MenuHistory::new(main_submenu)
+      history: MenuHistory::new(main_submenu),
+      renderer: renderer.into()
     }
   }
 
@@ -134,5 +140,10 @@ impl Menu {
     if self.controls.back.active() {
       self.back()
     }
+
+    self
+      .history
+      .current_mut()
+      .process(&self.controls, self.renderer.borrow())
   }
 }
