@@ -1,4 +1,4 @@
-use std::cell::RefMut;
+use std::cell::{Ref, RefMut};
 
 use crate::gui::{MenuEntry, Submenu};
 
@@ -12,13 +12,13 @@ pub trait SubmenuRenderer {
     &self,
     selection: &SubmenuSelection,
     entries: &'se SubmenuEntries
-  ) -> Vec<std::cell::Ref<'se, dyn MenuEntry>>;
+  ) -> Vec<(usize, Ref<'se, dyn MenuEntry>)>;
 
   fn get_visible_entries_mut<'se>(
     &self,
     selection: &SubmenuSelection,
     entries: &'se SubmenuEntries
-  ) -> Vec<RefMut<'se, dyn MenuEntry>>;
+  ) -> Vec<(usize, RefMut<'se, dyn MenuEntry>)>;
 
   fn widget(&self, menu_renderer: &dyn MenuRenderer, submenu: &Submenu) -> Box<dyn Widget>;
 }

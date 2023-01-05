@@ -1,9 +1,12 @@
 use scripthookv::types::Vector2;
 use scripthookv_gta::color::RGB;
 
-use crate::rendering::{
-  widgets::{DynamicLayoutSizing, Layout, Rectangle, Text, WithBackground},
-  Font, HorizontalOrigin, Origin, Padding, RenderedWidget, VerticalOrigin, Widget
+use crate::{
+  gui::renderer::MenuEntryRenderInfo,
+  rendering::{
+    widgets::{DynamicLayoutSizing, Layout, Rectangle, Text, WithBackground},
+    Font, HorizontalOrigin, Origin, Padding, RenderedWidget, VerticalOrigin, Widget
+  }
 };
 
 pub struct MenuEntryWidget {
@@ -11,14 +14,14 @@ pub struct MenuEntryWidget {
 }
 
 impl MenuEntryWidget {
-  pub fn new(text: impl Into<String>) -> Self {
+  pub fn new(info: MenuEntryRenderInfo, selected: bool) -> Self {
     Self {
       content: WithBackground::new(
         Layout::new_dynamic(
           Text::new(
-            text,
+            info.text,
             Font::ChaletComprimeCologne,
-            0.2f32,
+            0.3f32,
             RGB::new(255, 255, 255).into(),
             false
           ),
@@ -35,7 +38,11 @@ impl MenuEntryWidget {
           DynamicLayoutSizing::OutsideIn,
           DynamicLayoutSizing::InsideOut
         ),
-        Rectangle::new(RGB::new(40, 40, 40).into(), None, None)
+        if selected {
+          Rectangle::new(RGB::new(100, 0, 100).into(), None, None)
+        } else {
+          Rectangle::new(RGB::new(40, 40, 40).into(), None, None)
+        }
       )
     }
   }

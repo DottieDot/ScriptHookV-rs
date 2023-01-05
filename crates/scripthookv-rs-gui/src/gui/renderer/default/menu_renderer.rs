@@ -10,9 +10,20 @@ use crate::{
   rendering::{HorizontalOrigin, Origin, VerticalOrigin}
 };
 
+use super::{menu_entry_renderer::DefaultMenuEntryRenderer, DefaultSubmenuRenderer};
+
 pub struct DefaultMenuRenderer {
   submenu_renderer: Box<dyn SubmenuRenderer>,
   entry_renderer:   Box<dyn MenuEntryRenderer>
+}
+
+impl Default for DefaultMenuRenderer {
+  fn default() -> Self {
+    Self {
+      submenu_renderer: Box::new(DefaultSubmenuRenderer::new(15)),
+      entry_renderer:   Box::new(DefaultMenuEntryRenderer)
+    }
+  }
 }
 
 impl MenuRenderer for DefaultMenuRenderer {

@@ -2,6 +2,7 @@ mod menu_control;
 mod menu_history;
 
 pub use menu_control::*;
+use scripthookv::types::Vector2;
 
 use std::{borrow::Borrow, cell::RefCell, sync::Arc, time::Duration};
 
@@ -10,6 +11,8 @@ use scripthookv_gta::gta::{
   input::{Control, InputContext},
   mobile, Cam
 };
+
+use crate::rendering::{HorizontalOrigin, Origin, VerticalOrigin};
 
 use self::menu_history::MenuHistory;
 
@@ -26,13 +29,13 @@ impl Menu {
   pub fn new(
     controls: MenuControls,
     main_submenu: Arc<RefCell<Submenu>>,
-    renderer: impl Into<Box<dyn MenuRenderer>>
+    renderer: Box<dyn MenuRenderer>
   ) -> Self {
     Self {
       open: true,
       controls,
       history: MenuHistory::new(main_submenu),
-      renderer: renderer.into()
+      renderer
     }
   }
 
@@ -71,7 +74,9 @@ impl Menu {
     if self.is_open() {
       self.disable_game_behavior();
       self.update_controls();
-      self.update()
+      self.update();
+
+      self.render();
     }
   }
 
@@ -145,5 +150,19 @@ impl Menu {
       .history
       .current_mut()
       .process(&self.controls, self.renderer.borrow())
+  }
+
+  fn render(&self) {
+    self
+      .renderer
+      .submenu_renderer()
+      .widget(self.renderer.borrow(), &self.history.current())
+      .draw(
+        Vector2::new(20f32, 20f32),
+        Origin {
+          horizontal: HorizontalOrigin::Left,
+          vertical:   VerticalOrigin::Top
+        }
+      );
   }
 }

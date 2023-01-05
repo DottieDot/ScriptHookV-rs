@@ -117,7 +117,9 @@ impl SubmenuSelection {
     let selected = some_or_return!(self.selected_index);
     let mut new_selectable_selected = self.selectable_selected;
     for n in 1..entries.len() {
-      let index = (selected - n) % entries.len();
+      let index = selected
+        .checked_sub(n)
+        .unwrap_or_else(|| entries.len() - n - selected);
 
       if index == (entries.len() - 1) {
         new_selectable_selected = self.selectable_count - 1;

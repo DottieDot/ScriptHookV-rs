@@ -93,7 +93,7 @@ impl<W: Widget> Widget for Layout<W> {
     };
     self.widget.draw_offsetted(
       inner_box,
-      Vector2::zero(),
+      Vector2::new(self.padding.left, self.padding.top),
       self.widget_origin,
       self.widget_origin
     );

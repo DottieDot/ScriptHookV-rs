@@ -26,8 +26,8 @@ impl VerticalStack {
       horizontal_origin,
       height: 0f32
     };
-    instance.hint_children();
     instance.update_size();
+    instance.hint_children();
     instance
   }
 
@@ -38,6 +38,11 @@ impl VerticalStack {
   }
 
   fn update_size(&mut self) {
+    if self.children.is_empty() {
+      self.height = 0f32;
+      return;
+    }
+
     let mut height = self.gap * (self.children.len() - 1) as f32;
     for child in self.children.iter() {
       height += child.size().y;
@@ -49,9 +54,11 @@ impl VerticalStack {
         .children
         .iter()
         .map(|c| c.size().x)
-        .fold(f32::INFINITY, |a, b| a.max(b));
+        .fold(f32::NEG_INFINITY, |a, b| a.max(b));
 
-      self.width = Some(max_width);
+      if max_width != 0f32 {
+        self.width = Some(max_width);
+      }
     }
   }
 }

@@ -30,11 +30,13 @@ impl SubmenuEntries {
     index: usize,
     mut entries: Vec<Box<RefCell<dyn MenuEntry>>>
   ) -> Vec<(usize, RefMut<dyn MenuEntry>)> {
+    let count = entries.len();
+
     let mut right = self.entries.split_off(index);
     self.entries.append(&mut entries);
     self.entries.append(&mut right);
 
-    (index..entries.len())
+    (index..index + count)
       .map(|index| (index, self.entries[index].borrow_mut()))
       .collect::<Vec<_>>()
   }
@@ -140,17 +142,15 @@ impl SubmenuEntries {
     self.entries.is_empty()
   }
 
-  pub fn get_range(&self, range: Range<usize>) -> Vec<Ref<dyn MenuEntry>> {
-    self.entries[range]
-      .iter()
-      .map(|e| e.borrow())
+  pub fn get_range(&self, range: Range<usize>) -> Vec<(usize, Ref<dyn MenuEntry>)> {
+    range
+      .map(|i| (i, self.entries[i].borrow()))
       .collect::<Vec<_>>()
   }
 
-  pub fn get_range_mut(&self, range: Range<usize>) -> Vec<RefMut<dyn MenuEntry>> {
-    self.entries[range]
-      .iter()
-      .map(|e| e.borrow_mut())
+  pub fn get_range_mut(&self, range: Range<usize>) -> Vec<(usize, RefMut<dyn MenuEntry>)> {
+    range
+      .map(|i| (i, self.entries[i].borrow_mut()))
       .collect::<Vec<_>>()
   }
 }

@@ -1,4 +1,4 @@
-use std::{cell::RefCell, sync::Arc, thread, time::Duration};
+use std::{borrow::BorrowMut, cell::RefCell, sync::Arc, thread, time::Duration};
 
 use async_trait::async_trait;
 use log::{info, LevelFilter, Metadata, Record};
@@ -9,11 +9,16 @@ use scripthookv::{
 use scripthookv_gta::{
   gta::{
     entities::{Entity, Vehicle},
-    game, misc, Model
+    game,
+    input::Control,
+    misc, Model
   },
   ScriptHookVGtaPlugin
 };
-use scripthookv_gui::gui::{options::MenuOption, Menu, MenuEntry, Submenu};
+use scripthookv_gui::gui::{
+  options::MenuOption, renderer::default::DefaultMenuRenderer, Menu, MenuControl, MenuControls,
+  MenuEntry, MenuKey, Submenu
+};
 use scripthookv_shv::ScriptHookVBackend;
 use winapi::um::{
   consoleapi::AllocConsole,
@@ -31,15 +36,76 @@ impl<'rt> Script<'rt> for MyScript {
     let main_submenu = Submenu::new("Test", "Main Menu", |sub| {
       sub.add_multiple(
         (0..50)
-          .map(|_| Box::<RefCell<dyn MenuEntry>>::new(RefCell::new(MenuOption::new())))
+          .map(|i| {
+            Box::<RefCell<dyn MenuEntry>>::from(Box::new(RefCell::new(MenuOption::new(format!(
+              "Option {i}"
+            )))))
+          })
           .collect::<Vec<_>>()
       );
     });
 
-    // self.gui = Some(Menu::new())
+    self.gui = Some(Menu::new(
+      MenuControls {
+        up:      MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendUp),
+          MenuKey::GtaControl(Control::FrontendUp),
+          true,
+          Default::default()
+        ),
+        down:    MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendDown),
+          MenuKey::GtaControl(Control::FrontendDown),
+          true,
+          Default::default()
+        ),
+        left:    MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendLeft),
+          MenuKey::GtaControl(Control::FrontendLeft),
+          true,
+          Default::default()
+        ),
+        right:   MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendRight),
+          MenuKey::GtaControl(Control::FrontendRight),
+          true,
+          Default::default()
+        ),
+        confirm: MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendAccept),
+          MenuKey::GtaControl(Control::FrontendAccept),
+          true,
+          Default::default()
+        ),
+        back:    MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendCancel),
+          MenuKey::GtaControl(Control::FrontendCancel),
+          true,
+          Default::default()
+        ),
+        delete:  MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendDelete),
+          MenuKey::GtaControl(Control::FrontendDelete),
+          true,
+          Default::default()
+        ),
+        save:    MenuControl::new(
+          MenuKey::GtaControl(Control::FrontendX),
+          MenuKey::GtaControl(Control::FrontendX),
+          true,
+          Default::default()
+        )
+      },
+      Arc::new(RefCell::new(main_submenu)),
+      Box::new(DefaultMenuRenderer::default())
+    ))
   }
 
   async fn update(&mut self, commands: Arc<ScriptCommands<'rt>>) {
+    if let Some(gui) = self.gui.borrow_mut() {
+      gui.process();
+    }
+
     if misc::has_cheat_code_just_been_entered("test") {
       info!("Start spawn task");
       commands
@@ -61,7 +127,6 @@ impl<'rt> Script<'rt> for MyScript {
         })
         .detach();
     }
-    info!("Tick");
   }
 
   async fn cleanup(&mut self, _commands: Arc<ScriptCommands<'rt>>) {}
@@ -106,7 +171,7 @@ fn entrypoint(module: ModuleHandle) -> ScriptHookV {
   ScriptHookVBuilder::new(module, ScriptHookVBackend)
     .plugin(ScriptHookVGtaPlugin)
     .startup_script_registrar(|mgr| {
-      mgr.add_script(MyScript);
+      mgr.add_script(MyScript { gui: None });
     })
     .build()
 }

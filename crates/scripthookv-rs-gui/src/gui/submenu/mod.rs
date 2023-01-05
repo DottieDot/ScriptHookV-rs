@@ -47,28 +47,20 @@ impl Submenu {
     self
   }
 
-  pub(crate) fn navigated_from(&mut self) {
-    todo!()
-  }
+  pub(crate) fn navigated_from(&mut self) {}
 
-  pub(crate) fn navigated_to(&mut self) {
-    todo!()
-  }
+  pub(crate) fn navigated_to(&mut self) {}
 
-  pub(crate) fn menu_closed(&mut self) {
-    todo!()
-  }
+  pub(crate) fn menu_closed(&mut self) {}
 
-  pub(crate) fn menu_opened(&mut self) {
-    todo!()
-  }
+  pub(crate) fn menu_opened(&mut self) {}
 
   pub(crate) fn process(&mut self, controls: &MenuControls, renderer: &dyn MenuRenderer) {
     let visible_entries = renderer
       .submenu_renderer()
       .get_visible_entries_mut(&self.selection, &self.entries);
 
-    for mut entry in visible_entries {
+    for (_, mut entry) in visible_entries {
       entry.process(controls)
     }
   }

@@ -5,10 +5,10 @@ use crate::{
 
 use super::widgets::MenuEntryWidget;
 
-pub struct DefaultMenuEntryRenderer {}
+pub struct DefaultMenuEntryRenderer;
 
 impl MenuEntryRenderer for DefaultMenuEntryRenderer {
-  fn widget(&self, _entry: &dyn MenuEntry) -> Box<dyn Widget> {
-    Box::new(MenuEntryWidget::new("Entry"))
+  fn widget(&self, entry: &dyn MenuEntry, selected: bool) -> Box<dyn Widget> {
+    Box::new(MenuEntryWidget::new(entry.render_info(), selected))
   }
 }
