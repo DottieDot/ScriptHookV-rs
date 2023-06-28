@@ -2,6 +2,7 @@ use std::{
   any::{Any, TypeId},
   borrow::Borrow,
   collections::HashMap,
+  ffi::c_void,
   marker::PhantomData
 };
 
@@ -27,6 +28,16 @@ impl<Sender: 'static> EventEmitter<Sender> {
         let callback = any
           .downcast_ref::<Box<dyn Fn(&mut Sender, &Event)>>()
           .unwrap();
+        callback(sender, data);
+      }
+    }
+  }
+
+  pub unsafe fn emit_raw(&self, sender: &mut Sender, data: *const c_void, type_id: &TypeId) {
+    if let Some(listeners) = self.listeners.get(type_id) {
+      for listener in listeners {
+        let any: &dyn Any = listener.borrow();
+        let callback = any.downcast_ref_unchecked::<Box<dyn Fn(&mut Sender, *const c_void)>>();
         callback(sender, data);
       }
     }

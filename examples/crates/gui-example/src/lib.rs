@@ -16,8 +16,8 @@ use scripthookv_gta::{
   ScriptHookVGtaPlugin
 };
 use scripthookv_gui::gui::{
-  options::MenuOption, renderer::default::DefaultMenuRenderer, Menu, MenuControl, MenuControls,
-  MenuEntry, MenuKey, Submenu
+  options::MenuOptionBuilder, renderer::default::DefaultMenuRenderer, Menu, MenuControl,
+  MenuControls, MenuKey, Submenu
 };
 use scripthookv_shv::ScriptHookVBackend;
 use winapi::um::{
@@ -34,12 +34,23 @@ struct MyScript {
 impl<'rt> Script<'rt> for MyScript {
   async fn start(&mut self, _commands: Arc<ScriptCommands<'rt>>) {
     let main_submenu = Submenu::new("Test", "Main Menu", |sub| {
+      sub.add_multiple(vec![
+        MenuOptionBuilder::default()
+          .text("Hello There")
+          .on_click(|o, _| println!("Clicked: {}", o.text()))
+          .build(),
+        MenuOptionBuilder::default().text("General Kenobi").build(),
+        MenuOptionBuilder::default()
+          .text("You're a bold one")
+          .build(),
+      ]);
       sub.add_multiple(
         (0..50)
           .map(|i| {
-            Box::<RefCell<dyn MenuEntry>>::from(Box::new(RefCell::new(MenuOption::new(format!(
-              "Option {i}"
-            )))))
+            MenuOptionBuilder::default()
+              .text(format!("Option {i}"))
+              .on_click(|o, _| println!("Clicked: {}", o.text()))
+              .build()
           })
           .collect::<Vec<_>>()
       );

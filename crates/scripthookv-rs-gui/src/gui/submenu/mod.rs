@@ -60,8 +60,15 @@ impl Submenu {
       .submenu_renderer()
       .get_visible_entries_mut(&self.selection, &self.entries);
 
-    for (_, mut entry) in visible_entries {
-      entry.process(controls)
+    for (index, mut entry) in visible_entries {
+      entry.process(
+        controls,
+        self
+          .selection
+          .selected_index()
+          .map(|i| i == index)
+          .unwrap_or_default()
+      )
     }
   }
 

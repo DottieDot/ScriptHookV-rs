@@ -1,10 +1,14 @@
-use std::ops::{Add, Sub};
+use std::{
+  any::TypeId,
+  ffi::c_void,
+  ops::{Add, Sub}
+};
 
 use num_traits::Bounded;
 
 use crate::gui::{
   renderer::{MenuEntryRenderInfo, MenuEntryValue},
-  MenuEntry, ValueSource
+  MenuControls, MenuEntry, ValueSource
 };
 
 pub struct ValueOption<T> {
@@ -62,17 +66,19 @@ impl<T: Copy + Add<Output = T> + Sub<Output = T> + ToString + Bounded + PartialO
     true
   }
 
-  fn process(&mut self, controls: &crate::gui::MenuControls) {
-    if controls.right.active() {
-      self.increment()
-    }
+  fn process(&mut self, controls: &MenuControls, selected: bool) {
+    if selected {
+      if controls.right.active() {
+        self.increment()
+      }
 
-    if controls.left.active() {
-      self.decrement()
+      if controls.left.active() {
+        self.decrement()
+      }
     }
   }
 
-  fn render_info(&self) -> crate::gui::renderer::MenuEntryRenderInfo {
+  fn render_info(&self) -> MenuEntryRenderInfo {
     MenuEntryRenderInfo {
       text:   self.text.clone(),
       value:  Some(MenuEntryValue::Adjustable {
@@ -80,6 +86,10 @@ impl<T: Copy + Add<Output = T> + Sub<Output = T> + ToString + Bounded + PartialO
       }),
       toggle: None
     }
+  }
+
+  unsafe fn emit_raw(&mut self, data: *const c_void, type_id: &TypeId) {
+    todo!()
   }
 }
 

@@ -81,7 +81,7 @@ impl SubmenuRenderer for DefaultSubmenuRenderer {
           submenu
             .selection()
             .selected_index()
-            .map(|j| i == j)
+            .map(|j: usize| i == j)
             .unwrap_or_default()
         )
       })

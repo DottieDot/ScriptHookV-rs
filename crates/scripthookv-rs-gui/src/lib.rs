@@ -1,3 +1,5 @@
+#![feature(downcast_unchecked)]
+
 pub mod gui;
 pub mod rendering;
 
